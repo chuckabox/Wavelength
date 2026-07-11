@@ -207,7 +207,7 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
 
   useSyntheticLoop(syntheticEnabled, onFrame);
   useFrameIngest(sessionId, frames);
-  useSpeech(Boolean(sessionId), startedAtMs, appendTranscript, setInterim);
+  useSpeech(Boolean(sessionId) && videoSource !== 'none', startedAtMs, appendTranscript, setInterim);
 
   const sourceLabel = forcedSynthetic
     ? 'synthetic (?synthetic=1)'
