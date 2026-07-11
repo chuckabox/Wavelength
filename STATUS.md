@@ -15,15 +15,16 @@ the earlier throwaway test backend.
   dropped.
 - The deployed app **`wavelength-brain-37j5z.ondigitalocean.app` is now defunct** (its tables
   are gone) and should be torn down.
-- **Consequence:** E2E demo still needs `client/` wired to `/v1`. API is live on App Platform.
+- **Consequence:** Client wiring to `/v1` is on `dinil-main` (redeploy to ship). API is live on App Platform.
 - The new backend lives in **`server/`** (TypeScript/Express), the shared contract in
   **`shared/`** (Zod). Full plan: [docs/backend-plan.md](./docs/backend-plan.md).
 - **Do not follow** [docs/INTEGRATION.md](./docs/INTEGRATION.md) or [docs/ALIGNMENT.md](./docs/ALIGNMENT.md)
   — those are pre-pivot / obsolete.
 
 ## TL;DR
-**Phases 0–4 are done** (including live App Platform). Smoke passed 2026-07-11.
-**Next critical path:** wire `client/` → `/v1`, then MediaPipe LIVE loop.
+**Backend Phases 0–4 are done** (live App Platform). **Client → `/v1` wiring Phases 0–7
+landed on `dinil-main`** (consent → live → debrief, MediaPipe + synthetic, nudge, SSE).
+Redeploy App Platform to pick up the new client build.
 
 **Live URL:** https://wavelength-wxut4.ondigitalocean.app
 
@@ -78,22 +79,19 @@ Cursor user MCP (`~/.cursor/mcp.json`, not in git) mirrors Claude Code for this 
 7. **Persistence: DO Managed Postgres** — provisioned and working (was "stuck"; now live).
 
 ## Decisions we still need
-1. **Who wires `client/` → `/v1`, and by when?** Still THE critical path for E2E demo (API ready).
-2. **LIVE loop ambition** (MediaPipe → signals → event engine) vs. debrief-only fallback. Dinil
-   owns the loop (after live URL).
-3. **Tear down the old `wavelength-brain` DO app?** It's defunct now. Recommend yes.
-4. **Repo tidy:** `main` still carries the old static prototype (`old/`, `styles/`, root
+1. **Redeploy App Platform** so the live URL serves the wired client (code is on `dinil-main`).
+2. **Tear down the old `wavelength-brain` DO app?** It's defunct now. Recommend yes.
+3. **Repo tidy:** `main` still carries the old static prototype (`old/`, `styles/`, root
    `index.html`) and duplicate DO docs (`context/` vs `docs/`). Delete when someone wants it clean.
-5. **Demo roles:** narrator, laptop driver, two skit actors (BUILD_PLAN §6).
+4. **Demo roles:** narrator, laptop driver, two skit actors (BUILD_PLAN §6).
 
 ## What's LEFT, by owner
-- **Dinil:** MediaPipe LIVE loop against live `/v1`.
-- **Peter:** wire `client/` to `/v1`. Keep `sessions.ts` as offline fallback.
+- **All:** merge/redeploy `dinil-main` client wiring; two timed skit rehearsals; backup demo video.
 - **Connor:** coordinate teardown of the old app; own pitch/demo.
-- **All:** two timed skit rehearsals; record a backup demo video.
+- **Tuning:** venue thresholds via `?dipZ=&dipHold=&cooldown=`; synthetic via `?synthetic=1`.
 
 ## Known risks / loose ends
-- Frontend not yet wired to the new backend.
+- Live App Platform may still be serving a pre-wiring client until redeploy.
 - Old deployed app defunct (its tables were dropped) — tear it down.
 - Web Speech + MediaPipe are Chrome-only — demo in real Chrome, controlled lighting.
 - **Security:** DO API / model keys have appeared in chat and local MCP configs —

@@ -16,7 +16,7 @@ import {
   type EngineState,
 } from '@/perception/eventEngine';
 import { useSpeech } from '@/perception/useSpeech';
-import { requestNudge } from '@/api/nudge';
+import { requestNudgeWithFallback } from '@/api/nudgeWithFallback';
 import type { NudgeResponse } from 'shared';
 
 function forceSynthetic() {
@@ -111,15 +111,16 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
       setNudgeBusy(true);
       setNudgeError(null);
       try {
-        const res = await requestNudge({
+        const { response, fallback } = await requestNudgeWithFallback({
           sessionId: sessionId ?? undefined,
           context: context.trim() || undefined,
           confidence,
           evidence,
           recentFrames: framesRef.current.slice(-5),
         });
-        pushNudge(res, t);
+        pushNudge(response, t);
         setToastId(`${Date.now()}`);
+        if (fallback) setNudgeError('Using offline nudge phrasing');
       } catch (err) {
         setNudgeError(err instanceof Error ? err.message : 'Nudge failed');
       } finally {
