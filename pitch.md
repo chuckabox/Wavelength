@@ -1,126 +1,144 @@
-# Pitch — Social Cue Interpreter (working title)
+# Pitch — Conversation Debrief for Neurodivergent Networking (working title)
 
 > Living context doc for our final idea. Everything the team needs for the build and the
-> 2-minute judge pitch goes here. Status: **idea locked, framing + scope being nailed down.**
+> 2-minute judge pitch goes here. Status: **idea locked. Mode locked to post-conversation
+> debrief. Scoping the capture + v1 modality before architecture.**
 
 ## One-liner
-An assistive tool that watches a conversation (video + audio) and helps neurodivergent users
-read the social signals other people take for granted, then explains the *reasoning* behind
-each read so the user learns to spot it themselves.
+A conversation coach for neurodivergent people who want to get better at networking. You have a
+conversation, then afterward the tool debriefs it with you: what happened, where it went sideways
+and why, and what to try next time. It teaches the reasoning so the skill sticks.
+
+## Origin story (this is our "why us", lead the pitch with it)
+On our UQIES trip, someone we were travelling with really struggled to connect with people. One
+moment stuck with us: a few lines into a conversation with a stranger, they disclosed that they're
+autistic. It was true and honest, but the timing landed wrong and the room went dead silent. They
+didn't get why, and no one told them.
+
+That is the exact gap this tool fills. Not "you're broken," but "here is what happened in that
+moment, here is *why* it landed the way it did, and here is what you could try next time." We have
+autistic friends and we watched this happen in person. That is the story judges remember, and it
+is real.
 
 ## The problem (Social Good)
-Many autistic and otherwise neurodivergent people find non-verbal social signals hard to read in
-real time: facial expression, posture, tone of voice, the shift when someone loses interest or
-gets uncomfortable. That gap causes real daily friction: missed cues in interviews, at work, in
-friendships. Existing supports are either expensive human coaching or generic flashcard apps that
-don't work on live, messy, real-world interaction.
+Networking and casual conversation run on unwritten rules: how much to disclose and when, how to
+read when someone's interest shifts, how to balance talking and asking. Many neurodivergent people
+find these rules invisible in the moment. Existing help is expensive human coaching or generic
+apps that don't work on real, messy conversations. Nobody gives you honest, specific feedback on a
+conversation you actually had.
 
-Why this scores well where SynthForensics didn't: **the social good is showable, not just
-described.** We can demonstrate the actual use case live on stage, and it survives Q&A because
-the value is obvious and personal.
+Why this scores where SynthForensics didn't: **the social good is showable and personal**, and it
+survives Q&A because the value is obvious.
+
+## Product mode: post-conversation debrief (LOCKED)
+We are **not** doing real-time coaching. Deliberate decision:
+- Real-time feedback would split the user's attention between the person they're talking to and
+  the agent, which defeats the purpose (they're already working hard to follow one voice).
+- Post-conversation removes the cloud-inference latency pressure entirely.
+- It also sidesteps in-the-moment consent and distraction problems.
+
+The user records or role-plays a conversation, then sits down with the debrief afterward.
 
 ## Target user + framing guardrails
-Primary user: a neurodivergent adult who wants to understand and practice social interaction on
-their own terms. Not a clinical device, not a diagnosis tool.
+Primary user: a neurodivergent adult who wants to get better at networking and casual conversation
+on their own terms. Not a clinical or diagnostic tool.
 
-Guardrails (the autistic self-advocacy community is sensitive to these, and so are social-good
-judges):
-- **Agency, not correction.** The tool offers *possible* interpretations the user can accept or
-  reject. It never says "you did this wrong." The user is in control.
-- **"Nothing about us without us."** Frame as a tool built *with* the community's input, not a
-  fix imposed on them. If anyone on the team has a personal connection here, lead with it in the
-  pitch. That is our answer to "why you?"
-- **We surface signals, we do not claim to read minds.** See Defensibility below.
+Guardrails (self-advocacy community and social-good judges care about these):
+- **Agency, not correction.** Offers interpretations and options, never "you did this wrong."
+- **Explicit and concrete, not vague.** Many neurodivergent users prefer direct, literal feedback
+  over softened social hints. The coach should say plainly "disclosing you're autistic 90 seconds
+  in, before rapport was built, is likely why it went quiet," not "hmm, maybe consider timing."
+  This is a design principle, not just tone.
+- **"Nothing about us without us."** Built with community input. Our autistic friends are our
+  first testers and our answer to "why you?"
 
-## What it does (the product)
-Input: a short video clip of a conversation, or a live staged conversation via webcam + mic.
-Output: a running, timestamped read of the social signals, e.g.:
+## What the debrief actually gives the user
+A timestamped walkthrough of the conversation with coachable moments flagged. Likely components:
+- **Timeline** of the conversation with key moments marked.
+- **What worked / what to try differently**, specific and concrete.
+- **Coachable patterns**: disclosure timing, question-to-statement ratio, turn-taking balance
+  (did you dominate or go quiet?), topic transitions, self-focus vs. interest in the other person.
+- **The redo**: "here's how that moment could have gone" with a concrete alternative line.
+- **Reaction read** (if video is in scope): where the other person's engagement visibly shifted.
 
-> *0:12* — She just shifted back and crossed her arms while giving shorter answers. That often
-> signals she's losing interest or feels put on the spot. Watch what happens if you change the
-> subject or ask her a question.
-
-The value is the **explanation of the reasoning**, not a one-word emotion label. It teaches the
-pattern so the user gets better over time.
-
-## How it works (pipeline)
-1. **Capture** — webcam frames + microphone audio in the browser.
-2. **Signal extraction:**
-   - *Vision:* sample frames, run **DO vision inference** to describe facial expression, gaze,
-     posture, gesture per moment.
-   - *Audio:* transcript + tone/prosody. (See Open Questions: transcription likely runs in the
-     browser or via a DO model; tone features may be extracted client-side.)
-3. **Reasoning (the core):** a **DO reasoning model** (Claude / Llama on DO Inference) fuses the
-   vision + audio signals over a short time window into a plain-language interpretation *with its
-   reasoning and an uncertainty note.* This is the part that is NOT solvable with one prompt: it
-   is multimodal fusion over time, not a single image classification.
-4. **Delivery:** on-screen annotations synced to the video, optionally spoken via **DO / fal
-   text-to-speech** for a hands-free "practice mode."
-5. **Personalization / memory:** store the user's session history in **DO Managed Postgres +
-   pgvector** so the tool learns which situations *this* user finds hard and tailors its coaching.
-   This is our **Best Use of Data** story and it is a genuine one: assistive-tech users face the
-   same handful of hard situations repeatedly.
+## How it works (pipeline, record-then-analyze)
+1. **Capture** — a conversation is recorded (see Open Question 2 on how). Audio is the backbone;
+   video is an optional enhancement layer (see Open Question 1).
+2. **Transcribe + separate speakers** — turn the recording into a speaker-labelled transcript
+   (who said what, and when). Speaker separation is needed for turn-taking / ratio metrics.
+3. **Signal extraction:**
+   - *Audio/content (core):* the transcript, timing, pauses, turn-taking, and word choice.
+   - *Vision (optional):* sampled frames read for the other person's engagement shifts.
+4. **Reasoning (the core, on DO):** a **DO reasoning model** analyzes the full conversation and
+   produces the structured debrief above, with reasoning and explicit uncertainty. This is the
+   part that is not one prompt: it's structured analysis over a full multimodal timeline.
+5. **Delivery** — the debrief UI (timeline + flagged moments + redos), optionally spoken via DO /
+   fal text-to-speech.
+6. **Longitudinal memory (Best Use of Data):** store each session's patterns in **DO Managed
+   Postgres + pgvector** so the tool tracks *this* user's recurring habits across conversations
+   and shows progress over time ("this is the third time early disclosure came up"). Networking is
+   a repeated-practice skill, so the longitudinal angle is the real product, not a bolt-on.
 
 ## DigitalOcean tech mapping (Know the Audience)
-Judges are DO reps. Every layer rides on their platform, and we say so on stage:
-- **DO Inference — vision:** per-frame signal extraction.
-- **DO Inference — reasoning model:** the multimodal fusion + explanation (the headline).
-- **DO Inference — text-to-speech:** spoken coaching (practice mode).
-- **DO Managed Postgres + pgvector:** personalization memory / Best Use of Data.
+Judges are DO reps. Every layer rides on their platform:
+- **DO Inference — reasoning model:** the debrief analysis (the headline).
+- **DO Inference — vision:** optional engagement-shift reading from sampled frames.
+- **DO Inference / fal — text-to-speech:** spoken debrief.
+- **DO Managed Postgres + pgvector:** longitudinal pattern memory / Best Use of Data.
+- **DO Spaces:** store the recording (with a clear retention/deletion story).
 - **DO App Platform:** deploy from GitHub, live URL for the demo.
-- **Multi-model flex (optional demo beat):** live-swap the reasoning model (Llama → Claude)
-  mid-demo and show the interpretation get sharper. One line of code on their platform. This is
-  exactly the "novel use of DO tech" message the judges want to hear.
+- **Multi-model flex (optional demo beat):** live-swap the reasoning model (Llama to Claude) and
+  show the debrief get sharper. One line of code on their platform, exactly the "novel DO use"
+  message.
 
-## Defensibility (the honest-signals framing — read this before you pitch)
-There is a real scientific caveat: **you cannot reliably read a specific emotion off a single
-face.** The "one expression = one emotion" idea (basic-emotion theory) is contested; context
-changes everything. If we claim "the AI detects she is angry," a sharp judge can knock it over,
-and worse, we'd risk *teaching users to mis-read people.*
-
-Our framing dodges this cleanly: we present **observable signals + a probabilistic
-interpretation + the reasoning + explicit uncertainty**, never a verdict. "Crossed arms and
-shorter replies *often* mean disengagement, but it depends on context" is both more honest and
-more genuinely useful than "she is bored." This turns a weakness into a feature: the uncertainty
-and reasoning ARE the teaching tool.
+## Defensibility (read before pitching)
+You cannot reliably read a specific emotion off a face; the "one expression = one emotion" idea is
+contested. So we never output verdicts about internal emotion. We surface **observable signals + a
+probabilistic interpretation + the reasoning + explicit uncertainty.** Anchoring the core in
+conversation *content and timing* (which is concrete and defensible) rather than facial
+emotion-reading is deliberate. Video, if used, reads *engagement shifts* ("she started giving
+one-word answers"), not mind-states.
 
 ## How it demos (Entertaining Demo)
-Two teammates run a short staged conversation on webcam. The screen shows the live read appearing
-in real time. Then we invite a **judge to try it**: they have a 20-second chat and watch the tool
-narrate the signals. Backup: a pre-recorded clip we annotate, in case live capture is flaky on
-event wifi/lighting.
+Reenact the origin story. We show a short, deliberately awkward recorded conversation (including
+the mistimed-disclosure "dead silence" beat), then run the debrief live: the tool walks the moment,
+explains why it landed flat, and offers the redo. Emotionally resonant, legible in under a minute,
+and true. Optional closing beat: invite a judge to record a 20-second chat and debrief it live.
+Backup: the pre-recorded conversation always works even if live capture is flaky.
 
 ## Scoring against the 5 judged criteria
 | Criterion | Read |
 |---|---|
-| Novelty (DO use) | Strong — multimodal fusion across DO models, not a plain chatbot. |
-| Technical Complexity | Strong — vision + audio + temporal reasoning + pgvector memory. Not one prompt. |
-| Social Good | Strong AND demoable — the differentiator vs. SynthForensics. |
-| Entertaining Demo | Strong if live capture works; judge-participation beat is the hook. |
-| Know the Audience | Strong — every layer is DO, with an explicit multi-model flex. |
+| Novelty (DO use) | Strong — multimodal debrief across DO models + pgvector memory. |
+| Technical Complexity | Strong — transcription, diarization, temporal reasoning, longitudinal memory. Not one prompt. |
+| Social Good | Strong AND demoable, anchored in a real person we know. Our edge over SynthForensics. |
+| Entertaining Demo | Strong — reenacted origin story + live debrief + optional judge participation. |
+| Know the Audience | Strong — every layer is DO, with a multi-model flex. |
 
-## Open questions / decisions needed
-1. **Real-time vs. clip-analysis?** Live coaching during a real conversation is the hard version
-   (cloud vision latency is ~1-3s/call; true real-time is a stretch). Analyzing a short clip, or
-   near-real-time on a staged convo with sampled frames, is far more feasible and demos just as
-   well. **Recommended: near-real-time on sampled frames for the demo, positioned as a practice
-   tool.** Decide before architecture.
-2. **Whose face are we scanning — consent?** In a real conversation we're analyzing the *other*
-   person, who hasn't consented. For the demo we use willing teammates/judges. For the product
-   story, lean on ephemeral/on-device processing. Have an answer ready.
-3. **Audio pipeline:** confirm whether DO Inference accepts audio input for transcription/tone,
-   or whether transcription runs in-browser (Web Speech API) and only text/features go to DO.
-   Keep the load-bearing DO work in the reasoning + vision layers regardless.
-4. **Live coaching vs. after-the-fact review** as the primary product mode (affects UX entirely).
-5. **Name.** Candidates: Cue, Subtext, Decode, Read the Room, Signal, Lens. TBD.
+## Open questions for architecture (see chat — these block Dinil's design)
+1. **Audio-only v1, or audio + video?** The origin story is about *what was said and when*
+   (verbal). Recommend audio/transcript as the core and video as an optional secondary layer, so
+   the shakiest tech (facial reading) isn't load-bearing.
+2. **Capture method:** live role-play recorded on a laptop/phone, upload an existing recording, or
+   real-world capture at an event (consent-heavy)? Recommend record-a-practice-or-real-convo then
+   upload/analyze.
+3. **Single-session debrief only, or longitudinal progress tracking in the demo?** The pgvector
+   memory is the Best Use of Data story; decide if it ships in the demo or is a stretch.
+4. **Speaker separation (diarization):** needed for turn-taking/ratio metrics. Confirm it's in
+   scope and pick the tool (client-side, a DO model, or a library).
+5. **Transcription path:** confirm whether DO Inference takes audio input, or transcription runs
+   elsewhere (e.g. Whisper / browser) and only text goes to DO. Keep load-bearing DO work in the
+   reasoning + memory layers regardless.
+6. **Recording privacy:** where stored (Spaces?), retention, deletion. Sensitive personal convos.
+7. **Name.** Candidates: Cue, Subtext, Debrief, Recap, Read the Room, Signal, Second Take.
 
 ## Risks + mitigations
-- **Latency** → sample frames, near-real-time not true real-time, pre-recorded backup clip.
-- **Emotion-reading validity** → honest-signals framing above; never a verdict.
-- **Condescension / framing** → agency-first language, community-informed, "practice" not "fix."
-- **Live capture flaky on stage** → controlled lighting, pre-calibrated laptop, recorded backup.
-- **Consent optics** → willing demo participants, ephemeral-processing story.
+- **Emotion-reading validity** → content/timing core, honest-signals framing, never a verdict.
+- **Live capture flaky on stage** → pre-recorded reenacted conversation is the primary demo.
+- **Condescension / framing** → agency-first, explicit-and-concrete, community-informed.
+- **Consent** → willing demo participants; ephemeral/deletable recordings in the product story.
+- **Scope creep** → audio-first; video, TTS, and longitudinal memory are layers we add if time.
 
 ## Prize-target fit
-- **Best UI/UX:** the live annotated-conversation interface is the whole product. Bullseye.
-- **Best Use of Data:** the pgvector personalization memory. Make sure it's real, not bolted on.
+- **Best UI/UX:** the debrief interface (timeline + flagged moments + redos) is the whole product.
+- **Best Use of Data:** the pgvector longitudinal memory. Keep it real, not bolted on.
