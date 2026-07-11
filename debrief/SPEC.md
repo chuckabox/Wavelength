@@ -112,6 +112,16 @@ of letting it guess, temporal structure over the whole conversation, and the pgv
 makes patterns *recurring* across sessions. The metrics also act as guardrails so the model's
 coaching is anchored to real numbers, not vibes.
 
+## Memory layer (Best Use of Data)
+`memory.py` stores every debrief and produces two things: a `user_history_summary` string that
+feeds the prompt (recurring patterns + metric trends, so the coach can say "this has come up
+before" and acknowledge real improvement), and a `progress` dict for the UI's progress panel
+(per-metric values + improving/steady/watch verdicts). `sample-memory.json` is a 3-session
+fixture with an improving trajectory — Peter can build the progress panel against it now.
+Local JSON for the demo; `schema.sql` is the DO Managed Postgres + pgvector production shape
+(same data, plus embedded moments for "you've had this moment before" semantic recall).
+Run with history: `python run_debrief.py --history`.
+
 ## Open items for the brain layer
 - Should metrics be computed in code (deterministic, recommended) and passed *into* the prompt, or
   left to the model? Recommend code-computed for reliability and to strengthen the tech story.

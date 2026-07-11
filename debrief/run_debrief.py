@@ -196,6 +196,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("transcript", nargs="?", help="path to transcript JSON (default: sample-transcript.json)")
     parser.add_argument("--dry-run", action="store_true", help="no API call; print prompt + validate gold debrief")
     parser.add_argument("--model", default=DEFAULT_MODEL, help=f"DO model id (default: {DEFAULT_MODEL})")
+    parser.add_argument("--history", action="store_true", help="feed past-session context from memory.py and store the result")
     args = parser.parse_args(argv[1:])
 
     transcript_path = Path(args.transcript) if args.transcript else Path(__file__).with_name("sample-transcript.json")
@@ -203,8 +204,18 @@ def main(argv: list[str]) -> int:
     if args.dry_run:
         return _dry_run(transcript_path)
 
+    history_summary = None
+    store = None
+    if args.history:
+        from memory import MemoryStore
+
+        store = MemoryStore()
+        history_summary = store.history_summary()
+
     transcript = json.loads(transcript_path.read_text(encoding="utf-8"))
-    debrief = generate_debrief(transcript, args.model)
+    debrief = generate_debrief(transcript, args.model, history_summary)
+    if store is not None:
+        store.add(debrief, transcript.get("conversation_id"))
     print(json.dumps(debrief, indent=2))
     return 0
 
