@@ -1,7 +1,12 @@
 node_modules
 dist
-.rocketride/
 
 __pycache__/
 *.pyc
-debrief/wavelength-memory.json
+
+# Local env — never commit secrets
+.env
+.env.*
+!.env.example
+
+.DS_Store
