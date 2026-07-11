@@ -289,8 +289,7 @@ export function PipelineSection() {
             <br className="hidden sm:block" /> The pipeline isn’t.
           </h2>
           <p className="mx-auto mt-5 max-w-[52ch] font-sans text-[16px] leading-relaxed text-paper/55">
-            Everything you see on screen is computed on your own laptop. Only anonymous, low-rate signals ever cross to
-            the cloud — here is the whole path a moment takes.
+            Wavelength helps people who struggle to read how others are feeling — by computing cues on the laptop, then hedging every suggestion. Here’s the path a moment takes.
           </p>
         </motion.div>
 
@@ -587,8 +586,8 @@ export function SignalsSection() {
             Not one prompt. Three local channels.
           </h2>
           <p className="mx-auto mt-5 max-w-[48ch] font-sans text-[16px] leading-relaxed text-ink-2">
-            Every frame fuses geometry, body, and soft emotion — smoothed, baselined, and tagged with confidence before
-            anything reaches the cloud.
+            Geometry, body, and soft emotion — fused, baselined, and confidence-tagged on your laptop before anything
+            reaches the cloud. Relative reads for people who need the social channel made legible — never a diagnosis.
           </p>
         </motion.div>
 

@@ -93,8 +93,8 @@ function AppShell() {
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 items-start mb-8">
           <div className="text-left">
             <span className="font-sans font-medium tracking-tight text-xl text-ink">wavelength</span>
-            <p className="font-sans text-[14px] text-ink-2 mt-3 max-w-[30ch]">
-              A consented social co-pilot for one-on-one conversations.
+            <p className="font-sans text-[14px] text-ink-2 mt-3 max-w-[34ch]">
+              A consented co-pilot for people who struggle to read how others are feeling — built first for neurodivergent people.
             </p>
           </div>
           <div className="text-left flex flex-col gap-3 items-start">
