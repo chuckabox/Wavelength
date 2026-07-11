@@ -47,7 +47,11 @@ export default function LandingPage({ onEnterApp }: LandingPageProps) {
 
       {/* Core Features */}
       <section className="w-[100vw] relative left-[50%] right-[50%] -mx-[50vw] bg-paper-2 py-24 px-7">
-        <div className="max-w-[1160px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div className="max-w-[1160px] mx-auto">
+          <h2 className="font-sans text-[28px] md:text-[32px] tracking-tight font-medium text-ink mb-16 text-center">
+            Core features
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           {[
             {
               title: 'Live Nudges',
@@ -78,11 +82,15 @@ export default function LandingPage({ onEnterApp }: LandingPageProps) {
               <p className="font-sans text-[15px] text-ink-2 leading-relaxed">{feature.desc}</p>
             </motion.div>
           ))}
+          </div>
         </div>
       </section>
 
       {/* Trust Section */}
       <section className="relative max-w-[1160px] mx-auto text-center pt-24 pb-32">
+        <h2 className="font-sans text-[28px] md:text-[32px] tracking-tight font-medium text-ink mb-16 text-center">
+          Our approach
+        </h2>
         <motion.div
           initial={reduce ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}

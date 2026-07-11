@@ -11,11 +11,23 @@ type View = 'home' | 'live' | 'stats' | 'timeline'
 const pageVariants = {
   initial: { opacity: 0, y: 6 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -6 },
+  exit: { opacity: 0, y: -6 }
+}
+
+const MODAL_CONTENT = {
+  privacy: {
+    title: 'Privacy FAQ',
+    content: 'Wavelength operates strictly on-device. Your camera feed and audio never leave your laptop. Only derived, anonymized signals (like "tension level") and a transcript are processed by the AI backend to generate insights. No video or audio recordings are stored anywhere.'
+  },
+  terms: {
+    title: 'Terms of Service',
+    content: 'Wavelength is an exploratory tool for personal insight, not medical diagnosis or lie detection. By using Wavelength, you explicitly agree to obtain active two-party consent before utilizing the platform in any live conversations.'
+  }
 }
 
 export default function App() {
   const [view, setView] = useState<View>('home')
+  const [modal, setModal] = useState<'privacy' | 'terms' | null>(null)
 
   useEffect(() => {
     const handlePopState = () => {
@@ -67,9 +79,9 @@ export default function App() {
               A consented social co-pilot for one-on-one conversations.
             </p>
           </div>
-          <div className="text-left flex flex-col gap-3">
-            <a href="#" className="text-[13px] font-medium text-ink-2 hover:text-accent transition-colors">Privacy FAQ</a>
-            <a href="#" className="text-[13px] font-medium text-ink-2 hover:text-accent transition-colors">Terms of Service</a>
+          <div className="text-left flex flex-col gap-3 items-start">
+            <button onClick={() => setModal('privacy')} className="text-[13px] font-medium text-ink-2 hover:text-accent transition-colors">Privacy FAQ</button>
+            <button onClick={() => setModal('terms')} className="text-[13px] font-medium text-ink-2 hover:text-accent transition-colors">Terms of Service</button>
           </div>
         </div>
         <div className="flex flex-col md:flex-row justify-between items-center text-[13px] text-ink-3">
@@ -77,6 +89,40 @@ export default function App() {
           <p className="mt-4 md:mt-0">Analyzed locally. Never stored.</p>
         </div>
       </footer>
+
+      {/* Simple Information Modal */}
+      <AnimatePresence>
+        {modal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 bg-ink/20 backdrop-blur-sm" 
+              onClick={() => setModal(null)} 
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }} 
+              animate={{ opacity: 1, scale: 1, y: 0 }} 
+              exit={{ opacity: 0, scale: 0.95, y: 10 }} 
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="relative bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-rule w-full max-w-md p-8 z-10"
+            >
+              <h3 className="font-sans text-[20px] font-medium text-ink mb-4">{MODAL_CONTENT[modal].title}</h3>
+              <p className="font-sans text-[15px] text-ink-2 leading-relaxed">{MODAL_CONTENT[modal].content}</p>
+              <div className="mt-8 flex justify-end">
+                <button 
+                  onClick={() => setModal(null)} 
+                  className="px-6 py-2.5 bg-paper-2 hover:bg-rule text-ink rounded-full text-[14px] font-medium transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
