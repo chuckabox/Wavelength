@@ -7,10 +7,14 @@ COPY package.json package-lock.json ./
 COPY client/package.json ./client/
 COPY server/package.json ./server/
 COPY shared/package.json ./shared/
+# npm ci on Linux often skips optional native bindings when the lockfile was
+# generated on macOS (npm/cli#4828). Install the Linux glibc binaries Vite /
+# Tailwind need for the client build.
 RUN npm ci \
-  # Vite 8 / Rolldown: npm ci on Linux often skips optional native bindings
-  # when the lockfile was generated on macOS (npm/cli#4828).
-  && npm install --no-save @rolldown/binding-linux-x64-gnu@1.1.5
+ && npm install --no-save \
+      @rolldown/binding-linux-x64-gnu@1.1.5 \
+      lightningcss-linux-x64-gnu@1.32.0 \
+      @tailwindcss/oxide-linux-x64-gnu@4.3.2
 
 FROM deps AS build
 COPY . .
