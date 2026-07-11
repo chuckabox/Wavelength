@@ -10,9 +10,7 @@ import { useSyntheticLoop } from '@/perception/useSyntheticLoop';
 import { useFrameIngest } from '@/perception/useFrameIngest';
 import { useMediaPipe } from '@/perception/useMediaPipe';
 import {
-  considerNudge,
   createEngineState,
-  engineOptionsFromSearch,
   type EngineState,
 } from '@/perception/eventEngine';
 import { useSpeech } from '@/perception/useSpeech';
@@ -103,8 +101,8 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const engineRef = useRef<EngineState>(createEngineState());
-  const engineOpts = useMemo(() => engineOptionsFromSearch(), []);
   const nudgeInFlight = useRef(false);
+  const lastNudgeTimeRef = useRef(0);
   const framesRef = useRef(frames);
   framesRef.current = frames;
   const transcriptScrollRef = useRef<HTMLDivElement>(null);
@@ -174,13 +172,12 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
       appendFrames([frame]);
 
       if (!autoNudge) return;
-      const { state, candidate } = considerNudge(engineRef.current, frame, engineOpts);
-      engineRef.current = state;
-      if (candidate) {
-        void fireNudge(candidate.confidence, candidate.evidence, frame.t);
+      if (frame.t - lastNudgeTimeRef.current >= 15) {
+        lastNudgeTimeRef.current = frame.t;
+        void fireNudge('medium', ['Periodic recommendation'], frame.t);
       }
     },
-    [appendFrames, autoNudge, engineOpts, fireNudge],
+    [appendFrames, autoNudge, fireNudge],
   );
 
   const forcedSynthetic = forceSynthetic();
@@ -281,13 +278,6 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
     await fireNudge(latest.confidence ?? 'medium', evidence, latest.t);
   };
 
-  const activeToast = useMemo(() => {
-    if (!toastId) return null;
-    const last = nudges[nudges.length - 1];
-    if (!last) return null;
-    return { ...last, id: toastId };
-  }, [nudges, toastId]);
-
   const liveFrame = showLiveData ? latest : null;
 
   const confPct =
@@ -342,8 +332,8 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
   return (
     <section className="pb-24 relative">
       <AnimatePresence>
-        {activeToast && (
-          <NudgeToast key={activeToast.id} nudge={activeToast} onDismiss={() => setToastId(null)} />
+        {toastId && nudges.length > 0 && (
+          <NudgeToast key={toastId} nudge={nudges[nudges.length - 1]} onDismiss={() => setToastId(null)} />
         )}
       </AnimatePresence>
 
@@ -607,7 +597,7 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
                   disabled={!liveFrame || nudgeBusy}
                   onClick={() => void handleNudge()}
                 >
-                  {nudgeBusy ? 'Requesting…' : 'Request help'}
+                  {nudgeBusy ? 'Requesting…' : 'Request recommendation'}
                 </Button>
                 <label className="flex items-center gap-2 text-[13px] text-ink-2 cursor-pointer">
                   <input
@@ -616,7 +606,7 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
                     onChange={(e) => setAutoNudge(e.target.checked)}
                     className="accent-[var(--color-accent)] w-4 h-4"
                   />
-                  Auto-nudge (event engine · 15s cooldown)
+                  Auto-recommend (every 15s)
                 </label>
                 {nudgeError && (
                   <p className="text-xs text-alert" role="alert">
