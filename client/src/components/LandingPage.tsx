@@ -190,6 +190,28 @@ export default function LandingPage({ onEnterApp }: LandingPageProps) {
           </div>
         </div>
       </section>
+
+      {/* Mobile QR Code */}
+      <section className="w-[100vw] relative left-[50%] right-[50%] -mx-[50vw] bg-paper-2 py-24 px-7 border-t border-rule/50">
+        <div className="max-w-[1160px] mx-auto flex flex-col items-center text-center">
+          <h2 className="font-sans text-[24px] md:text-[28px] tracking-tight font-medium text-ink mb-4">
+            Scan to use on mobile
+          </h2>
+          <p className="font-sans text-[15px] text-ink-2 mb-10">
+            Or visit directly:{' '}
+            <a href="https://wavelength-wxut4.ondigitalocean.app/" className="text-accent hover:underline font-medium">
+              https://wavelength-wxut4.ondigitalocean.app/
+            </a>
+          </p>
+          <div className="p-4 bg-white rounded-2xl shadow-sm border border-rule">
+            <img 
+              src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://wavelength-wxut4.ondigitalocean.app/" 
+              alt="QR Code"
+              className="w-[160px] h-[160px] md:w-[200px] md:h-[200px] object-contain"
+            />
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
