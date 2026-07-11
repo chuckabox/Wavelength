@@ -7,16 +7,24 @@ import { AppError } from '../errors.js';
 let pool: pg.Pool | null = null;
 let db: NodePgDatabase<typeof schema> | null = null;
 
+/** DO Managed Postgres uses a private CA; strip sslmode so Pool ssl wins. */
+function poolConfig(connectionString: string): pg.PoolConfig {
+  const url = new URL(connectionString);
+  url.searchParams.delete('sslmode');
+  url.searchParams.delete('ssl');
+  return {
+    connectionString: url.toString(),
+    // TODO(prod): pin the DO CA cert instead of disabling verification.
+    ssl: { rejectUnauthorized: false },
+    max: 10,
+  };
+}
+
 export function getPool(): pg.Pool {
   if (pool) return pool;
   const env = loadEnv();
   if (!env.DATABASE_URL) throw AppError.upstream('DATABASE_URL not configured');
-  pool = new pg.Pool({
-    connectionString: env.DATABASE_URL,
-    // DO Managed Postgres requires TLS. TODO(prod): pin the DO CA cert instead.
-    ssl: { rejectUnauthorized: false },
-    max: 10,
-  });
+  pool = new pg.Pool(poolConfig(env.DATABASE_URL));
   return pool;
 }
 
