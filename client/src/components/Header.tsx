@@ -40,11 +40,6 @@ export default function Header({ phase, onBrandClick, onEndSession, onKill }: He
               Debrief
             </span>
           )}
-          {phase === 'consent' && (
-            <span className="font-mono text-[11px] tracking-[0.06em] uppercase text-ink-3">
-              Consent
-            </span>
-          )}
         </div>
       </header>
 

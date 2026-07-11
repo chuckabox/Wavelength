@@ -10,7 +10,7 @@ import {
 import type { NudgeResponse, SignalFrame, TranscriptTurn } from 'shared';
 import * as sessionsApi from '@/api/sessions';
 
-export type AppPhase = 'home' | 'consent' | 'live' | 'debrief';
+export type AppPhase = 'home' | 'live' | 'debrief';
 
 export type NudgeEvent = NudgeResponse & { t: number; id: string };
 
@@ -38,7 +38,8 @@ type SessionState = {
 
 const SessionContext = createContext<SessionState | null>(null);
 
-const MAX_FRAMES = 3600;
+/** ~30 min at 5 Hz */
+const MAX_FRAMES = 9000;
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [phase, setPhase] = useState<AppPhase>('home');

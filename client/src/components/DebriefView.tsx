@@ -22,7 +22,8 @@ function formatTime(t: number) {
 }
 
 export default function DebriefView() {
-  const { sessionId, context, frames, nudges, transcript, reset, setPhase } = useSession();
+  const { sessionId, context, frames, nudges, transcript, reset, startSession, starting } =
+    useSession();
   const [text, setText] = useState('');
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -237,8 +238,12 @@ export default function DebriefView() {
       </div>
 
       <div className="flex gap-3">
-        <Button variant="primary" onClick={() => setPhase('consent')}>
-          New session
+        <Button
+          variant="primary"
+          disabled={starting}
+          onClick={() => void startSession()}
+        >
+          {starting ? 'Starting…' : 'New session'}
         </Button>
         <Button variant="ghost" onClick={reset}>
           Home

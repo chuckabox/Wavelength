@@ -3,8 +3,17 @@ import { z } from 'zod';
 export const ConfidenceSchema = z.enum(['low', 'medium', 'high']);
 export type Confidence = z.infer<typeof ConfidenceSchema>;
 
+/** Experimental soft state distribution (sums ≈ 1). Not a clinical label. */
+export const EmotionProbsSchema = z.object({
+  calm: z.number().min(0).max(1),
+  positive: z.number().min(0).max(1),
+  tense: z.number().min(0).max(1),
+  uncertain: z.number().min(0).max(1),
+});
+export type EmotionProbs = z.infer<typeof EmotionProbsSchema>;
+
 /**
- * One ~1 Hz sample of derived, privacy-preserving signals from the client-side
+ * One ~5 Hz sample of derived, privacy-preserving signals from the client-side
  * perception loop. Raw video/audio never leaves the browser — only these features
  * reach the server.
  */
@@ -16,6 +25,8 @@ export const SignalFrameSchema = z.object({
   attention: z.number().min(0).max(1).optional(),
   /** raw derived signal snapshot (smile, gaze, lean, ...) */
   signals: z.record(z.string(), z.number()).optional(),
+  /** soft emotion-state probabilities — experimental / hedged */
+  emotions: EmotionProbsSchema.optional(),
   confidence: ConfidenceSchema.optional(),
 });
 export type SignalFrame = z.infer<typeof SignalFrameSchema>;

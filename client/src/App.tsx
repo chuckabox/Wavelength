@@ -2,7 +2,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Header from './components/Header';
 import LiveView from './components/LiveView';
 import LandingPage from './components/LandingPage';
-import ConsentView from './components/ConsentView';
 import DebriefView from './components/DebriefView';
 import { SessionProvider, useSession } from './session/SessionContext';
 
@@ -13,7 +12,16 @@ const pageVariants = {
 };
 
 function AppShell() {
-  const { phase, setPhase, endAndDebrief, kill } = useSession();
+  const { phase, setPhase, endAndDebrief, kill, startSession, starting, startError } =
+    useSession();
+
+  const enterLive = async () => {
+    try {
+      await startSession();
+    } catch {
+      /* startError set in context */
+    }
+  };
 
   return (
     <div className="max-w-[1160px] mx-auto px-7 pb-14">
@@ -35,8 +43,13 @@ function AppShell() {
           exit="exit"
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
-          {phase === 'home' && <LandingPage onEnterApp={() => setPhase('consent')} />}
-          {phase === 'consent' && <ConsentView />}
+          {phase === 'home' && (
+            <LandingPage
+              onEnterApp={() => void enterLive()}
+              starting={starting}
+              startError={startError}
+            />
+          )}
           {phase === 'live' && (
             <LiveView onGoToTimeline={() => void endAndDebrief()} />
           )}
@@ -48,8 +61,7 @@ function AppShell() {
           <h3 className="text-sm font-medium text-ink-2 mb-2">Privacy FAQ</h3>
           <p className="text-xs text-ink-3 leading-relaxed">
             Raw video and audio never leave this laptop. Only derived signal features and
-            transcript text reach DigitalOcean. Session data is created only after both
-            people consent.
+            transcript text reach DigitalOcean.
           </p>
         </div>
       </footer>

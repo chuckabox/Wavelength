@@ -76,6 +76,8 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
   const [toastId, setToastId] = useState<string | null>(null);
   const [nudgeError, setNudgeError] = useState<string | null>(null);
   const [autoNudge, setAutoNudge] = useState(true);
+  const [meshOn, setMeshOn] = useState(true);
+  const [meshCanvas, setMeshCanvas] = useState<HTMLCanvasElement | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -116,7 +118,7 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
           context: context.trim() || undefined,
           confidence,
           evidence,
-          recentFrames: framesRef.current.slice(-5),
+          recentFrames: framesRef.current.slice(-25),
         });
         pushNudge(response, t);
         setToastId(`${Date.now()}`);
@@ -156,6 +158,8 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
     video: videoEl,
     startedAtMs,
     onFrame,
+    meshCanvas,
+    meshEnabled: meshOn,
   });
 
   const syntheticOn =
@@ -169,10 +173,10 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
   const sourceLabel = forceSynthetic()
     ? 'synthetic (?synthetic=1)'
     : videoSource === 'camera' && mpStatus === 'ready'
-      ? 'MediaPipe'
+      ? 'MediaPipe · 5 Hz'
       : videoSource === 'camera' && mpStatus === 'loading'
         ? 'MediaPipe loading…'
-        : 'synthetic fallback';
+        : 'synthetic fallback · 5 Hz';
 
   const handleStartCamera = async () => {
     try {
@@ -213,11 +217,18 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
 
   const handleNudge = async () => {
     if (!latest || nudgeBusy) return;
+    const topEmotion = latest.emotions
+      ? (Object.entries(latest.emotions) as [string, number][]).sort((a, b) => b[1] - a[1])[0]
+      : null;
     const evidence = [
       `engagement ~${pct(latest.engagement)}%`,
       `attention ~${pct(latest.attention)}%`,
       ...(latest.signals?.gazeAway != null
         ? [`gazeAway ~${pct(latest.signals.gazeAway)}%`]
+        : []),
+      ...(latest.signals?.smile != null ? [`smile ~${pct(latest.signals.smile)}%`] : []),
+      ...(topEmotion
+        ? [`soft state lean: ${topEmotion[0]} ~${pct(topEmotion[1])}% (experimental)`]
         : []),
     ].slice(0, 12);
     await fireNudge(latest.confidence ?? 'medium', evidence, latest.t);
@@ -236,12 +247,39 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
   const signalRows = [
     { label: 'Engagement', width: pct(latest?.engagement), variant: 'accent' },
     { label: 'Attention', width: pct(latest?.attention), variant: 'positive' },
+    { label: 'Smile', width: pct(latest?.signals?.smile), variant: 'positive' },
+    { label: 'Lean-in', width: pct(latest?.signals?.lean), variant: 'accent' },
     {
       label: 'Gaze away',
       width: pct(latest?.signals?.gazeAway),
       variant: (latest?.signals?.gazeAway ?? 0) > 0.55 ? 'alert' : 'accent',
     },
   ];
+
+  const emotionRows = useMemo(() => {
+    if (!latest?.emotions) return [] as Array<{ label: string; p: number }>;
+    return (
+      [
+        { label: 'calm', p: latest.emotions.calm },
+        { label: 'positive', p: latest.emotions.positive },
+        { label: 'tense', p: latest.emotions.tense },
+        { label: 'uncertain', p: latest.emotions.uncertain },
+      ] as Array<{ label: string; p: number }>
+    ).sort((a, b) => b.p - a.p);
+  }, [latest]);
+
+  const talkStats = useMemo(() => {
+    if (frames.length < 5 || !latest) return null;
+    const window = frames.slice(-50);
+    const talkingFrac =
+      window.filter((f) => (f.signals?.talking ?? 0) > 0.35).length / window.length;
+    let mono = 0;
+    for (let i = frames.length - 1; i >= 0; i--) {
+      if ((frames[i]?.signals?.talking ?? 0) > 0.35) mono += 0.2;
+      else break;
+    }
+    return { talkShare: talkingFrac, floorSec: mono };
+  }, [frames, latest]);
 
   const recentNudges = [...nudges].reverse().slice(0, 5);
 
@@ -282,6 +320,13 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
               className={`w-full h-full ${videoSource === 'clip' ? 'object-contain bg-black' : 'object-cover'} ${videoSource === 'none' ? 'hidden' : 'block'}`}
               playsInline
             />
+            {videoSource === 'camera' && (
+              <canvas
+                ref={setMeshCanvas}
+                className="absolute inset-0 w-full h-full pointer-events-none"
+                aria-hidden
+              />
+            )}
           </div>
 
           <input
@@ -304,13 +349,22 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
               </>
             )}
             {videoSource === 'camera' && (
-              <Button
-                variant="default"
-                className="flex-1 text-alert border-alert/20 hover:bg-alert/10"
-                onClick={handleStopCamera}
-              >
-                Stop Camera
-              </Button>
+              <>
+                <Button
+                  variant="default"
+                  className="flex-1 text-alert border-alert/20 hover:bg-alert/10"
+                  onClick={handleStopCamera}
+                >
+                  Stop Camera
+                </Button>
+                <Button
+                  variant={meshOn ? 'primary' : 'default'}
+                  className="flex-1"
+                  onClick={() => setMeshOn((v) => !v)}
+                >
+                  Mesh {meshOn ? 'on' : 'off'}
+                </Button>
+              </>
             )}
             {videoSource === 'clip' && (
               <Button variant="default" className="flex-1" onClick={handleClearClip}>
@@ -324,7 +378,9 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
           <Card>
             <CardHeader>
               <CardTitle>Tracking</CardTitle>
-              <CardDescription>{latest ? `t = ${formatTime(latest.t)}` : 'warming up'}</CardDescription>
+              <CardDescription>
+                {latest ? `t = ${formatTime(latest.t)} · 5 Hz` : 'warming up'}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-3.5">
@@ -343,13 +399,21 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
                   </div>
                 </div>
               </div>
+              {talkStats && (
+                <p className="font-mono text-[11px] text-ink-2 mt-3 leading-relaxed">
+                  Floor: you ~{Math.round(talkStats.talkShare * 100)}% of last 10s
+                  {talkStats.floorSec >= 1
+                    ? ` · holding ~${Math.round(talkStats.floorSec)}s`
+                    : ''}
+                </p>
+              )}
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
               <CardTitle>Signals</CardTitle>
-              <CardDescription>descriptors only — never emotion labels</CardDescription>
+              <CardDescription>observable descriptors</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col gap-3.5">
@@ -363,6 +427,35 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
                   </div>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>State probabilities</CardTitle>
+              <CardDescription>experimental · soft distribution · not a diagnosis</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {emotionRows.length === 0 ? (
+                <p className="text-[13px] text-ink-3">Waiting for face signals…</p>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {emotionRows.map(({ label, p }) => (
+                    <div key={label} className="grid grid-cols-[88px_1fr_40px] items-center gap-2.5">
+                      <span className="text-[13px] text-ink-2 capitalize">{label}</span>
+                      <BarTrack
+                        width={pct(p)}
+                        variant={
+                          label === 'tense' || label === 'uncertain' ? 'alert' : 'positive'
+                        }
+                      />
+                      <span className="font-mono text-xs font-medium text-ink min-w-[36px] text-right">
+                        {pct(p)}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="mt-4 flex flex-col gap-2">
                 <Button
                   variant="primary"
