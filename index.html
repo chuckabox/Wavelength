@@ -6,27 +6,28 @@
 <title>CueReader</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <style>
   :root {
-    --bg: #FFF5EE;
-    --surface: #FFFFFF;
-    --border: #1E1B3A;
-    --text: #1E1B3A;
-    --text-muted: #7B7592;
-    --accent: #FF4D6A;
-    --accent-soft: #FFE0E6;
-    --positive: #3ECF8E;
-    --positive-soft: #D6F5E6;
-    --warn: #FFB84D;
-    --warn-soft: #FFF0D6;
-    --blue: #4D8CFF;
-    --blue-soft: #DEEAFF;
-    --border-w: 3px;
-    --radius-card: 20px;
-    --radius-pill: 999px;
+    --bg: #F4F1EB;
+    --surface: #FEFDFB;
+    --border: #DDD8CF;
+    --border-strong: #C4BEB4;
+    --text: #2D2A26;
+    --text-secondary: #6B665E;
+    --text-muted: #9B958C;
+    --accent: #4A8B7F;
+    --accent-soft: #E3EEEB;
+    --accent-text: #3A6F65;
+    --alert: #C44B42;
+    --alert-soft: #F5E0DE;
+    --positive: #5A9A6E;
+    --positive-soft: #E0F0E4;
+    --neutral-soft: #E8E5DF;
+    --bar-track: #ECEAE4;
+    --camera-bg: #ECEAE4;
     font-variant-numeric: tabular-nums;
   }
 
@@ -35,22 +36,19 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: "DM Sans", sans-serif;
-    font-size: 14px;
-    line-height: 1.5;
+    font-family: "Lexend", sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.6;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   .app {
-    max-width: 1280px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 24px 48px;
-  }
-
-  /* ── Typography ── */
-  .display {
-    font-family: "Fredoka", sans-serif;
-    font-weight: 700;
   }
 
   /* ── Header ── */
@@ -58,154 +56,133 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 0 24px;
+    padding: 20px 0 28px;
   }
 
   .logo {
-    font-family: "Fredoka", sans-serif;
-    font-size: 30px;
-    font-weight: 900;
-    letter-spacing: -1px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
   }
 
-  .logo-icon {
-    width: 40px;
-    height: 40px;
+  .logo-mark {
+    width: 32px;
+    height: 32px;
     background: var(--accent);
-    border: var(--border-w) solid var(--border);
-    border-radius: 12px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    color: #fff;
     flex-shrink: 0;
   }
 
-  .logo-icon svg {
-    width: 22px;
-    height: 22px;
-    fill: #fff;
-    stroke: none;
-  }
-
-  .header-controls {
-    display: flex;
-    gap: 10px;
-    align-items: center;
+  .logo-mark svg {
+    width: 18px;
+    height: 18px;
   }
 
   .btn {
-    font-family: "DM Sans", sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 8px 20px;
-    border: var(--border-w) solid var(--border);
+    font-family: "Lexend", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 18px;
+    border: 1px solid var(--border-strong);
     background: var(--surface);
     color: var(--text);
-    border-radius: var(--radius-pill);
+    border-radius: 8px;
     cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    white-space: nowrap;
+    letter-spacing: 0.01em;
   }
 
   .btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 0 0 var(--border);
-  }
-
-  .btn:active {
-    transform: translateY(1px);
-    box-shadow: none;
+    background: var(--bg);
+    border-color: var(--text-muted);
   }
 
   .btn:focus-visible {
-    outline: 3px solid var(--accent);
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
 
-  .btn--accent {
+  .btn--primary {
     background: var(--accent);
-    color: #FFF;
-    border-color: var(--border);
+    color: #fff;
+    border-color: var(--accent);
   }
 
-  .btn--accent:hover {
-    background: #E8405C;
-    box-shadow: 0 4px 0 0 var(--border);
+  .btn--primary:hover {
+    background: var(--accent-text);
+    border-color: var(--accent-text);
   }
 
   /* ── Main Grid ── */
   .main-grid {
     display: grid;
-    grid-template-columns: 1fr 400px;
+    grid-template-columns: 1fr 380px;
     gap: 24px;
     align-items: start;
   }
 
-  /* ── Camera Feed ── */
+  /* ── Camera ── */
   .camera-area {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
   }
 
   .camera-feed {
     aspect-ratio: 4 / 3;
-    background: #F0EBE3;
-    border: var(--border-w) solid var(--border);
-    border-radius: var(--radius-card);
+    background: var(--camera-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
-    overflow: hidden;
   }
 
   .camera-placeholder {
     text-align: center;
     color: var(--text-muted);
+    padding: 24px;
   }
 
-  .camera-placeholder .cam-icon {
-    width: 80px;
-    height: 80px;
+  .cam-icon {
+    width: 56px;
+    height: 56px;
     background: var(--surface);
-    border: var(--border-w) solid var(--border);
+    border: 1px solid var(--border);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 16px;
+    margin: 0 auto 14px;
   }
 
-  .camera-placeholder .cam-icon svg {
-    width: 36px;
-    height: 36px;
+  .cam-icon svg {
+    width: 24px;
+    height: 24px;
     stroke: var(--text-muted);
     fill: none;
-    stroke-width: 2;
+    stroke-width: 1.5;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
 
-  .camera-placeholder p {
-    font-family: "Fredoka", sans-serif;
-    font-size: 18px;
-    font-weight: 900;
-    color: var(--text);
-    letter-spacing: -0.3px;
+  .camera-placeholder .title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
   }
 
-  .camera-placeholder .sub {
-    font-family: inherit;
+  .camera-placeholder .subtitle {
     font-size: 13px;
-    font-weight: 400;
     color: var(--text-muted);
-    margin-top: 4px;
+    font-weight: 400;
   }
 
   .camera-actions {
@@ -221,56 +198,52 @@
   .panels {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
   }
 
   .panel {
-    border: var(--border-w) solid var(--border);
-    border-radius: var(--radius-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
     background: var(--surface);
-    overflow: hidden;
   }
 
   .panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 18px;
-    border-bottom: 2px solid var(--border);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
   }
 
   .panel-title {
-    font-family: "Fredoka", sans-serif;
-    font-size: 16px;
-    font-weight: 900;
-    letter-spacing: -0.3px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.01em;
   }
 
-  .panel-badge {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: var(--radius-pill);
-    background: var(--blue-soft);
-    color: var(--blue);
+  .panel-meta {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted);
   }
 
   .panel-body {
-    padding: 16px 18px;
+    padding: 16px;
   }
 
   /* ── Face Detection ── */
   .face-detect {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
   }
 
   .face-avatar {
-    width: 52px;
-    height: 52px;
-    border: var(--border-w) solid var(--border);
-    border-radius: 16px;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
     background: var(--bg);
     display: flex;
     align-items: center;
@@ -279,15 +252,15 @@
   }
 
   .face-avatar svg {
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
   }
 
   .face-avatar svg circle,
   .face-avatar svg ellipse {
     fill: none;
     stroke: var(--text-muted);
-    stroke-width: 2;
+    stroke-width: 1.5;
   }
 
   .face-info {
@@ -297,41 +270,39 @@
 
   .face-info .label {
     font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
   }
 
   .confidence-bar {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
 
   .bar-track {
     flex: 1;
-    height: 10px;
-    background: var(--bg);
-    border: 2px solid var(--border);
-    border-radius: var(--radius-pill);
-    position: relative;
+    height: 6px;
+    background: var(--bar-track);
+    border-radius: 3px;
     overflow: hidden;
   }
 
   .bar-fill {
     height: 100%;
-    border-radius: var(--radius-pill);
-    transition: width 0.4s ease;
+    border-radius: 3px;
   }
 
   .bar-fill--accent { background: var(--accent); }
+  .bar-fill--alert { background: var(--alert); }
   .bar-fill--positive { background: var(--positive); }
-  .bar-fill--warn { background: var(--warn); }
-  .bar-fill--blue { background: var(--blue); }
 
   .bar-value {
-    font-size: 14px;
-    font-weight: 800;
-    min-width: 36px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    min-width: 32px;
     text-align: right;
   }
 
@@ -340,29 +311,26 @@
     font-size: 15px;
     line-height: 1.7;
     color: var(--text);
+    font-weight: 400;
   }
 
   .highlight {
     background: var(--accent-soft);
-    color: var(--accent);
-    font-weight: 700;
-    padding: 1px 8px;
-    border-radius: var(--radius-pill);
-    white-space: nowrap;
+    color: var(--accent-text);
+    font-weight: 500;
+    padding: 1px 6px;
+    border-radius: 4px;
   }
 
   .cue-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+    display: inline-block;
     font-size: 12px;
-    font-weight: 700;
-    padding: 4px 12px;
-    border: 2px solid var(--border);
-    border-radius: var(--radius-pill);
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 6px;
     margin-top: 12px;
     background: var(--accent-soft);
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   /* ── Signals ── */
@@ -374,83 +342,65 @@
 
   .signal-row {
     display: grid;
-    grid-template-columns: 80px 1fr 40px;
+    grid-template-columns: 76px 1fr 34px;
     align-items: center;
     gap: 10px;
   }
 
   .signal-label {
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 500;
+    color: var(--text-secondary);
   }
 
   /* ── Dual Panel ── */
   .dual-panel {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 14px;
   }
 
   /* ── Audio ── */
   .audio-metrics {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
   }
 
   .audio-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 0;
-    border-bottom: 1px dashed #E0DCD4;
-  }
-
-  .audio-row:last-child {
-    border-bottom: none;
   }
 
   .audio-key {
     font-size: 13px;
-    color: var(--text-muted);
-    font-weight: 500;
+    color: var(--text-secondary);
+    font-weight: 400;
   }
 
   .audio-val {
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 500;
+    color: var(--text);
   }
 
-  .audio-pill {
-    padding: 2px 10px;
-    border-radius: var(--radius-pill);
-    font-size: 12px;
-    font-weight: 700;
-  }
-
-  .audio-pill--warn {
-    background: var(--warn-soft);
-    color: #CC8800;
-  }
-
-  .audio-pill--neutral {
-    background: var(--bg);
-    color: var(--text-muted);
+  .audio-val--warn {
+    color: var(--alert);
   }
 
   /* ── Timeline ── */
   .timeline {
     display: flex;
     flex-direction: column;
-    gap: 0;
   }
 
   .timeline-event {
     display: grid;
-    grid-template-columns: 50px 1fr auto;
+    grid-template-columns: 42px 1fr auto;
     gap: 10px;
     padding: 10px 0;
-    border-bottom: 1px dashed #E0DCD4;
+    border-bottom: 1px solid var(--bar-track);
     align-items: center;
   }
 
@@ -465,110 +415,101 @@
 
   .t-time {
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 500;
     color: var(--text-muted);
   }
 
   .t-desc {
     font-size: 13px;
+    font-weight: 400;
+    color: var(--text);
     line-height: 1.5;
   }
 
   .t-tag {
-    display: inline-flex;
-    align-items: center;
     font-size: 11px;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: var(--radius-pill);
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 5px;
     white-space: nowrap;
   }
 
   .t-tag--alert {
-    background: var(--accent-soft);
-    color: var(--accent);
+    background: var(--alert-soft);
+    color: var(--alert);
   }
 
   .t-tag--positive {
     background: var(--positive-soft);
-    color: #1A9960;
+    color: var(--positive);
   }
 
   .t-tag--neutral {
-    background: var(--blue-soft);
-    color: var(--blue);
+    background: var(--neutral-soft);
+    color: var(--text-muted);
   }
 
   /* ── Responsive ── */
-  @media (max-width: 880px) {
+  @media (max-width: 860px) {
     .main-grid {
       grid-template-columns: 1fr;
     }
   }
 
   @media (max-width: 520px) {
-    .app { padding: 0 14px 32px; }
-    header { padding: 14px 0 18px; }
-    .logo { font-size: 22px; }
+    .app { padding: 0 16px 32px; }
     .camera-actions { flex-wrap: wrap; }
     .camera-actions .btn { flex: 1 1 auto; min-width: 120px; }
     .dual-panel { grid-template-columns: 1fr; }
-    .signal-row { grid-template-columns: 70px 1fr 36px; }
   }
 </style>
 
 <div class="app">
   <header>
     <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="10" fill="none" stroke="#fff" stroke-width="2"/>
-          <circle cx="12" cy="12" r="5" fill="#fff"/>
-          <circle cx="12" cy="12" r="2" fill="#1E1B3A"/>
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="8" stroke="#fff" stroke-width="1.5" fill="none"/>
+          <circle cx="12" cy="12" r="3.5" fill="#fff"/>
         </svg>
       </div>
       CueReader
     </div>
-    <div class="header-controls">
-      <button class="btn">Settings</button>
-    </div>
+    <button class="btn">Settings</button>
   </header>
 
   <div class="main-grid">
-    <!-- Left: Camera -->
     <div class="camera-area">
       <div class="camera-feed">
         <div class="camera-placeholder">
           <div class="cam-icon">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <rect x="2" y="5" width="16" height="14" rx="3"/>
-              <polygon points="18,9 23,6 23,18 18,15"/>
+              <rect x="2" y="6" width="15" height="13" rx="2"/>
+              <path d="M17 10l4-2.5v9L17 14"/>
             </svg>
           </div>
-          <p>Camera Feed</p>
-          <p class="sub">Press Start to begin reading</p>
+          <p class="title">Camera Feed</p>
+          <p class="subtitle">Press Start to begin reading</p>
         </div>
       </div>
       <div class="camera-actions">
-        <button class="btn btn--accent">Start</button>
+        <button class="btn btn--primary">Start</button>
         <button class="btn">Upload Clip</button>
       </div>
     </div>
 
-    <!-- Right: Panels -->
     <div class="panels">
-      <!-- Face Detection -->
       <div class="panel">
         <div class="panel-header">
           <span class="panel-title">Detected Face</span>
-          <span class="panel-badge">1 subject</span>
+          <span class="panel-meta">1 subject</span>
         </div>
         <div class="panel-body">
           <div class="face-detect">
             <div class="face-avatar">
-              <svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="14" cy="11" r="5"/>
-                <ellipse cx="14" cy="26" rx="9" ry="7"/>
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="9" r="4"/>
+                <ellipse cx="12" cy="21" rx="7" ry="5.5"/>
               </svg>
             </div>
             <div class="face-info">
@@ -584,11 +525,10 @@
         </div>
       </div>
 
-      <!-- Interpretation -->
       <div class="panel">
         <div class="panel-header">
           <span class="panel-title">Interpretation</span>
-          <span class="panel-badge">2s ago</span>
+          <span class="panel-meta">2s ago</span>
         </div>
         <div class="panel-body">
           <p class="interpretation-text">
@@ -598,7 +538,6 @@
         </div>
       </div>
 
-      <!-- Signals + Audio -->
       <div class="dual-panel">
         <div class="panel">
           <div class="panel-header">
@@ -616,14 +555,14 @@
               <div class="signal-row">
                 <span class="signal-label">Tension</span>
                 <div class="bar-track">
-                  <div class="bar-fill bar-fill--accent" style="width: 62%"></div>
+                  <div class="bar-fill bar-fill--alert" style="width: 62%"></div>
                 </div>
                 <span class="bar-value">62%</span>
               </div>
               <div class="signal-row">
                 <span class="signal-label">Interest</span>
                 <div class="bar-track">
-                  <div class="bar-fill bar-fill--blue" style="width: 28%"></div>
+                  <div class="bar-fill bar-fill--accent" style="width: 28%"></div>
                 </div>
                 <span class="bar-value">28%</span>
               </div>
@@ -639,26 +578,25 @@
             <div class="audio-metrics">
               <div class="audio-row">
                 <span class="audio-key">Tone</span>
-                <span class="audio-pill audio-pill--neutral">Flat</span>
+                <span class="audio-val">Flat</span>
               </div>
               <div class="audio-row">
                 <span class="audio-key">Pace</span>
-                <span class="audio-pill audio-pill--warn">Slowing</span>
+                <span class="audio-val audio-val--warn">Slowing</span>
               </div>
               <div class="audio-row">
                 <span class="audio-key">Volume</span>
-                <span class="audio-pill audio-pill--warn">Dropping</span>
+                <span class="audio-val audio-val--warn">Dropping</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Timeline -->
       <div class="panel">
         <div class="panel-header">
           <span class="panel-title">Timeline</span>
-          <span class="panel-badge">3 events</span>
+          <span class="panel-meta">3 events</span>
         </div>
         <div class="panel-body">
           <div class="timeline">
