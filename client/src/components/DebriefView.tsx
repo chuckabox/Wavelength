@@ -103,10 +103,6 @@ export default function DebriefView() {
     [frames, transcript],
   );
 
-  const hasArousal = useMemo(
-    () => frames.some((f) => typeof f.signals?.arousal === 'number'),
-    [frames],
-  );
 
   const chartData = useMemo(
     () =>
@@ -114,10 +110,6 @@ export default function DebriefView() {
         t: f.t,
         engagement: Math.round((f.engagement ?? 0) * 100),
         attention: Math.round((f.attention ?? 0) * 100),
-        arousal:
-          typeof f.signals?.arousal === 'number'
-            ? Math.round(f.signals.arousal * 100)
-            : null,
       })),
     [frames],
   );
@@ -138,212 +130,148 @@ export default function DebriefView() {
         </p>
       </div>
 
-      {analysis.theTell ? (
-        <div className="bg-white rounded-xl p-8 mb-8">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="font-mono text-[11px] tracking-[0.08em] uppercase text-alert">
-              The Tell
-            </span>
-            <Badge variant="alert" size="sm">
-              t = {formatTime(analysis.theTell.t)}
-            </Badge>
-            <span className="font-mono text-[10px] text-ink-3 uppercase tracking-wide">
-              face vs body · experimental
-            </span>
+      <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8 items-stretch mb-8">
+        <div className="bg-white rounded-xl p-8 flex flex-col">
+          <div className="mb-6">
+            <h3 className="font-sans text-[20px] font-medium text-ink mb-1">Engagement over time</h3>
+            <p className="text-[14px] text-ink-3">{chartData.length} frames recorded</p>
           </div>
-          <p className="text-[17px] leading-snug text-ink font-light">
-            The body moved while the face held steady — {analysis.theTell.bodyDesc}, while
-            the {analysis.theTell.faceDesc}.
-          </p>
-          <p className="font-mono text-[11px] text-ink-3 mt-2">
-            The clearest divergence between the voluntary channel (expression) and the
-            involuntary one (arousal). A signal worth noticing — not a verdict.
-          </p>
-        </div>
-      ) : (
-        hasArousal && (
-          <p className="font-mono text-xs text-ink-3 mb-8">
-            No strong face/body divergence stood out this session — the two channels
-            largely tracked together.
-          </p>
-        )
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-8 items-stretch mb-8">
-        <div className="flex flex-col gap-6">
-          <div className="bg-white rounded-xl p-8">
-            <div className="mb-6">
-              <h3 className="font-sans text-[20px] font-medium text-ink mb-1">Engagement over time</h3>
-              <p className="text-[14px] text-ink-3">{chartData.length} frames recorded</p>
-            </div>
-            <div className="h-64 w-full">
-              {chartData.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-sm text-ink-3">
-                  No frames recorded for this session.
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                    <CartesianGrid stroke="#DAD5C8" strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="t"
-                      tickFormatter={formatTime}
-                      stroke="#A39D8E"
-                      fontSize={11}
-                    />
-                    <YAxis domain={[0, 100]} stroke="#A39D8E" fontSize={11} width={32} />
-                    <Tooltip
-                      formatter={(value) => [`${value}%`, 'engagement']}
-                      labelFormatter={(label) => formatTime(Number(label))}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="engagement"
-                      stroke="#2F4E87"
-                      fill="#E4E9F4"
-                      strokeWidth={1.5}
-                      isAnimationActive={false}
-                    />
-                    {hasArousal && (
-                      <Area
-                        type="monotone"
-                        dataKey="arousal"
-                        stroke="#B04A3C"
-                        fill="none"
-                        strokeWidth={1.25}
-                        strokeDasharray="2 2"
-                        connectNulls
-                        isAnimationActive={false}
-                      />
-                    )}
-                    {analysis.theTell && (
-                      <ReferenceLine
-                        x={analysis.theTell.t}
-                        stroke="#B04A3C"
-                        strokeWidth={1.5}
-                        label={{ value: 'the tell', fill: '#B04A3C', fontSize: 10, position: 'top' }}
-                      />
-                    )}
-                    {nudges.map((n) => (
-                      <ReferenceLine
-                        key={n.id}
-                        x={n.t}
-                        stroke="#A39D8E"
-                        strokeDasharray="4 4"
-                        label={{ value: 'suggestion', fill: '#A39D8E', fontSize: 10 }}
-                      />
-                    ))}
-                  </AreaChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-            {hasArousal && (
-              <div className="flex items-center gap-4 font-mono text-[10px] text-ink-3 mt-3">
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-4 h-[2px] bg-accent" /> engagement
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-4 h-0 border-t-[1.5px] border-dashed border-alert" />{' '}
-                  arousal (rPPG · experimental)
-                </span>
-              </div>
-            )}
-          </div>
-
-          <div className="bg-white rounded-xl p-8">
-            <dl className="grid grid-cols-3 gap-6">
-              <div>
-                <dt className="text-ink-3 text-xs mb-1">Mean engagement</dt>
-                <dd className="font-mono text-ink text-lg">{Math.round(meanEng * 100)}%</dd>
-              </div>
-              <div>
-                <dt className="text-ink-3 text-xs mb-1">Frames</dt>
-                <dd className="font-mono text-ink text-lg">{frames.length}</dd>
-              </div>
-              <div>
-                <dt className="text-ink-3 text-xs mb-1">Friction</dt>
-                <dd className="font-mono text-ink text-lg">{nudges.length}</dd>
-              </div>
-            </dl>
-          </div>
-
-          {analysis.moments.length > 0 && (
-            <div className="bg-white rounded-xl p-8">
-              <h3 className="font-sans text-[20px] font-medium text-ink mb-4">Moments the signals flagged</h3>
-              <ul className="flex flex-col divide-y divide-rule">
-                {analysis.moments.map((m: any, i: number) => (
-                  <li key={`${m.t}-${m.channel}-${i}`} className="py-3 flex gap-3 items-start first:pt-0 last:pb-0">
-                    <span className="font-mono text-xs text-ink-3 shrink-0 w-9">
-                      {formatTime(m.t)}
-                    </span>
-                    <span className="text-[13px] text-ink flex-1">
-                      <span className="capitalize">{m.channel}</span>{' '}
-                      {m.direction === 'rise' ? 'rose' : 'dropped'}{' '}
-                      {Math.round(m.before * 100)}
-                      {m.channel === 'valence' ? '' : '%'} →{' '}
-                      {Math.round(m.after * 100)}
-                      {m.channel === 'valence' ? '' : '%'}
-                      {m.coText && (
-                        <span className="text-ink-3">
-                          {' '}
-                          · &ldquo;{m.coText.length > 60 ? m.coText.slice(0, 59) + '…' : m.coText}&rdquo;
-                        </span>
-                      )}
-                    </span>
-                    <Badge variant={m.direction === 'fall' ? 'alert' : 'accent'} size="sm">
-                      {m.direction}
-                    </Badge>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {nudges.length > 0 && (
-            <div className="bg-white rounded-xl p-8">
-              <h3 className="font-sans text-[20px] font-medium text-ink mb-4">Suggestions</h3>
-              <ul className="flex flex-col divide-y divide-rule">
-                {nudges.map((n) => (
-                  <li key={n.id} className="py-3 flex gap-3 items-start first:pt-0 last:pb-0">
-                    <span className="font-mono text-xs text-ink-3 shrink-0">{formatTime(n.t)}</span>
-                    <span className="text-[13px] text-ink flex-1">{n.text}</span>
-                    <Badge variant="accent" size="sm">
-                      {n.confidence}
-                    </Badge>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
-        <div className="flex flex-col h-full">
-          <div className="bg-white rounded-xl p-8 flex-1 flex flex-col min-h-0">
-            <h3 className="font-sans text-[20px] font-medium text-ink mb-4">Transcript</h3>
-            {transcript.length > 0 ? (
-              <div className="flex flex-col gap-3 overflow-y-auto flex-1 min-h-0 pr-2">
-                {transcript.map((turn, i) => (
-                  <div key={`${turn.t}-${i}`} className="flex items-start gap-3">
-                    <span className="font-mono text-xs text-ink-3 shrink-0 pt-0.5">
-                      {formatTime(turn.t)}
-                    </span>
-                    <span className="text-[13px] leading-relaxed text-ink font-light">
-                      <span className="font-medium capitalize text-ink-2 mr-2">
-                        {turn.speaker}:
-                      </span>
-                      {turn.text}
-                    </span>
-                  </div>
-                ))}
+          <div className="flex-1 w-full min-h-[300px]">
+            {chartData.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-sm text-ink-3">
+                No frames recorded for this session.
               </div>
             ) : (
-              <p className="text-[13px] text-ink-3">No transcript available.</p>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid stroke="var(--color-rule)" strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="t"
+                    tickFormatter={formatTime}
+                    stroke="var(--color-ink-3)"
+                    fontSize={11}
+                  />
+                  <YAxis domain={[0, 100]} stroke="var(--color-ink-3)" fontSize={11} width={32} />
+                  <Tooltip
+                    formatter={(value) => [`${value}%`, 'engagement']}
+                    labelFormatter={(label) => formatTime(Number(label))}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="engagement"
+                    stroke="var(--color-accent)"
+                    fill="var(--color-accent-soft)"
+                    strokeWidth={1.5}
+                    isAnimationActive={false}
+                  />
+                  {nudges.map((n) => (
+                    <ReferenceLine
+                      key={n.id}
+                      x={n.t}
+                      stroke="var(--color-ink-3)"
+                      strokeDasharray="4 4"
+                      label={{ value: 'suggestion', fill: 'var(--color-ink-3)', fontSize: 10 }}
+                    />
+                  ))}
+                </AreaChart>
+              </ResponsiveContainer>
             )}
           </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-8 flex flex-col h-[450px] lg:h-auto">
+          <h3 className="font-sans text-[20px] font-medium text-ink mb-4">Transcript</h3>
+          {transcript.length > 0 ? (
+            <div className="flex flex-col gap-3 overflow-y-auto flex-1 min-h-0 pr-2">
+              {transcript.map((turn, i) => (
+                <div key={`${turn.t}-${i}`} className="flex items-start gap-3">
+                  <span className="font-mono text-xs text-ink-3 shrink-0 pt-0.5">
+                    {formatTime(turn.t)}
+                  </span>
+                  <span className="text-[13px] leading-relaxed text-ink font-light">
+                    <span className="font-medium capitalize text-ink-2 mr-2">
+                      {turn.speaker}:
+                    </span>
+                    {turn.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-[13px] text-ink-3">No transcript available.</p>
+          )}
         </div>
       </div>
 
-      <div className="bg-white rounded-xl p-8 mb-16">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="bg-white rounded-xl p-8">
+          <h3 className="font-sans text-[20px] font-medium text-ink mb-4">Stats</h3>
+          <dl className="flex flex-col gap-6">
+            <div>
+              <dt className="text-ink-3 text-xs mb-1">Mean engagement</dt>
+              <dd className="font-mono text-ink text-lg">{Math.round(meanEng * 100)}%</dd>
+            </div>
+            <div>
+              <dt className="text-ink-3 text-xs mb-1">Frames</dt>
+              <dd className="font-mono text-ink text-lg">{frames.length}</dd>
+            </div>
+            <div>
+              <dt className="text-ink-3 text-xs mb-1">Friction</dt>
+              <dd className="font-mono text-ink text-lg">{nudges.length}</dd>
+            </div>
+          </dl>
+        </div>
+
+        {analysis.moments.length > 0 && (
+          <div className="bg-white rounded-xl p-8 md:col-span-1">
+            <h3 className="font-sans text-[20px] font-medium text-ink mb-4">Moments</h3>
+            <ul className="flex flex-col divide-y divide-rule max-h-[250px] overflow-y-auto pr-2">
+              {analysis.moments.map((m: any, i: number) => (
+                <li key={`${m.t}-${m.channel}-${i}`} className="py-3 flex gap-3 items-start first:pt-0 last:pb-0">
+                  <span className="font-mono text-xs text-ink-3 shrink-0 w-9">
+                    {formatTime(m.t)}
+                  </span>
+                  <span className="text-[13px] text-ink flex-1">
+                    <span className="capitalize">{m.channel}</span>{' '}
+                    {m.direction === 'rise' ? 'rose' : 'dropped'}{' '}
+                    {Math.round(m.before * 100)}
+                    {m.channel === 'valence' ? '' : '%'} →{' '}
+                    {Math.round(m.after * 100)}
+                    {m.channel === 'valence' ? '' : '%'}
+                    {m.coText && (
+                      <span className="text-ink-3 block mt-1">
+                        &ldquo;{m.coText.length > 60 ? m.coText.slice(0, 59) + '…' : m.coText}&rdquo;
+                      </span>
+                    )}
+                  </span>
+                  <Badge variant={m.direction === 'fall' ? 'alert' : 'accent'} size="sm">
+                    {m.direction}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {nudges.length > 0 && (
+          <div className="bg-white rounded-xl p-8 md:col-span-1">
+            <h3 className="font-sans text-[20px] font-medium text-ink mb-4">Suggestions</h3>
+            <ul className="flex flex-col divide-y divide-rule max-h-[250px] overflow-y-auto pr-2">
+              {nudges.map((n) => (
+                <li key={n.id} className="py-3 flex gap-3 items-start first:pt-0 last:pb-0">
+                  <span className="font-mono text-xs text-ink-3 shrink-0">{formatTime(n.t)}</span>
+                  <span className="text-[13px] text-ink flex-1">{n.text}</span>
+                  <Badge variant="accent" size="sm">
+                    {n.confidence}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      <div className="bg-white rounded-xl p-8 mb-16 w-full">
         <div className="flex items-center gap-2 mb-2">
           <h3 className="font-sans text-[20px] font-medium text-ink">AI debrief</h3>
           <Badge variant={streaming ? 'accent' : done ? 'positive' : 'alert'} size="sm">

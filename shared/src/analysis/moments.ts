@@ -10,7 +10,7 @@
 import type { SignalFrame } from '../domain/signals.js';
 import type { TranscriptTurn } from '../contracts/debrief.js';
 
-export type MomentChannel = 'engagement' | 'arousal' | 'valence' | 'attention';
+export type MomentChannel = 'engagement' | 'valence' | 'attention';
 
 export interface Moment {
   t: number;
@@ -40,7 +40,6 @@ export interface TheTell {
 export interface CongruencePoint {
   t: number;
   face: number; // normalized facial valence, ~-1..1
-  body: number; // arousal 0..1
 }
 
 export interface Responsiveness {
@@ -172,13 +171,11 @@ export function analyzeSession(
   const eng = series(sorted, (f) => f.engagement);
   const val = series(sorted, faceValence);
   const att = series(sorted, (f) => f.attention);
-  const arousalSeries = series(sorted, (f) => f.signals?.arousal);
   const bpmS = series(sorted, (f) => f.signals?.bpm);
   const motion = series(sorted, (f) => f.signals?.motionEnergy);
 
   const moments = [
     ...detectShifts(eng, 'engagement', 0.12, transcript),
-    ...detectShifts(arousalSeries, 'arousal', 0.14, transcript),
     ...detectShifts(val, 'valence', 0.3, transcript),
     ...detectShifts(att, 'attention', 0.14, transcript),
   ]
@@ -192,52 +189,17 @@ export function analyzeSession(
   for (let i = 0; i < sorted.length; i += step) {
     const f = sorted[i]!;
     const fv = faceValence(f);
-    const ar = f.signals?.arousal;
-    if (typeof fv === 'number' && typeof ar === 'number') {
-      congruence.push({ t: Math.round(f.t * 10) / 10, face: fv, body: ar });
+    if (typeof fv === 'number') {
+      congruence.push({ t: Math.round(f.t * 10) / 10, face: fv });
     }
   }
 
-  // The Tell: arousal most elevated above baseline while the face is least negative.
-  let theTell: TheTell | null = null;
-  const baselineArousal = median(arousalSeries.slice(0, Math.max(3, Math.floor(arousalSeries.length * 0.25))).map((p) => p.v));
-  if (baselineArousal !== null && arousalSeries.length > 6) {
-    let bestScore = 0;
-    let bestFrame: SignalFrame | null = null;
-    let bestElev = 0;
-    for (const f of sorted) {
-      const ar = f.signals?.arousal;
-      if (typeof ar !== 'number') continue;
-      const fv = faceValence(f) ?? 0;
-      const elevation = Math.max(0, ar - baselineArousal);
-      const faceCalmness = 1 - Math.max(0, Math.min(1, -fv)); // 1 = not negative
-      const score = Math.min(1, elevation * 2) * faceCalmness;
-      if (score > bestScore) {
-        bestScore = score;
-        bestFrame = f;
-        bestElev = elevation;
-      }
-    }
-    if (bestFrame && bestScore > 0.22) {
-      const bpm = bestFrame.signals?.bpm;
-      theTell = {
-        t: Math.round(bestFrame.t * 10) / 10,
-        arousalElevation: Math.round(bestElev * 100) / 100,
-        bpm: typeof bpm === 'number' ? Math.round(bpm) : null,
-        faceDesc: 'face read steady — no matching negative shift',
-        bodyDesc:
-          typeof bpm === 'number'
-            ? `arousal ~${Math.round(bestElev * 100)}% above their baseline; heart rate ~${Math.round(bpm)} bpm`
-            : `arousal ~${Math.round(bestElev * 100)}% above their baseline`,
-        strength: Math.round(bestScore * 100) / 100,
-      };
-    }
-  }
+  const theTell: TheTell | null = null;
 
   // Responsiveness (single-camera proxy): animation × expressive variability.
   const responsiveness = computeResponsiveness(motion, val);
 
-  const factLines = buildFactLines(moments, theTell, responsiveness, bpmS, arousalSeries, baselineArousal);
+  const factLines = buildFactLines(moments, theTell, responsiveness, bpmS);
 
   return { moments, theTell, congruence, responsiveness, factLines };
 }
@@ -271,8 +233,6 @@ function buildFactLines(
   theTell: TheTell | null,
   responsiveness: Responsiveness,
   bpmS: Series,
-  arousalS: Series,
-  baselineArousal: number | null,
 ): string[] {
   const lines: string[] = [];
   if (bpmS.length > 3) {
@@ -280,12 +240,6 @@ function buildFactLines(
     const lo = Math.round(Math.min(...bpms));
     const hi = Math.round(Math.max(...bpms));
     lines.push(`Heart rate (rPPG, experimental) ranged ~${lo}–${hi} bpm over the session.`);
-  }
-  if (baselineArousal !== null && arousalS.length > 3) {
-    const peak = Math.max(...arousalS.map((p) => p.v));
-    lines.push(
-      `Body arousal peaked ~${Math.round((peak - baselineArousal) * 100)}% above their own baseline.`,
-    );
   }
   for (const m of moments) {
     const dir = m.direction === 'rise' ? 'rose' : 'dropped';
