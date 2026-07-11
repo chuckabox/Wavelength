@@ -105,7 +105,6 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Could not start session';
       setStartError(message);
-      throw err;
     } finally {
       setStarting(false);
     }

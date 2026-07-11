@@ -8,12 +8,6 @@ import StatsView from './components/StatsView';
 import TimelineView from './components/TimelineView';
 import { SessionProvider, useSession } from './session/SessionContext';
 
-const pageVariants = {
-  initial: { opacity: 0, y: 6 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -6 },
-};
-
 const MODAL_CONTENT = {
   privacy: {
     title: 'Privacy FAQ',
@@ -48,39 +42,28 @@ function AppShell() {
         onPhaseChange={setPhase}
       />
       
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={phase}
-          variants={pageVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.2, ease: 'easeOut' }}
-        >
-          {phase === 'home' && (
-            <div className="flex flex-col items-center justify-center h-[50vh] gap-4">
-              <p className="text-ink-3 font-mono text-sm tracking-widest uppercase text-center max-w-md">
-                {starting ? 'Starting camera...' : startError ? `Error: ${startError}` : ''}
-              </p>
-              {startError && (
-                <button
-                  onClick={() => void startSession()}
-                  className="mt-4 px-4 py-2 bg-ink text-paper rounded-full text-sm font-medium hover:opacity-90"
-                >
-                  Retry Connection
-                </button>
-              )}
-            </div>
+      {phase === 'home' && (
+        <div className="flex flex-col items-center justify-center h-[50vh] gap-4">
+          <p className="text-ink-3 font-mono text-sm tracking-widest uppercase text-center max-w-md">
+            {starting ? 'Starting camera...' : startError ? `Error: ${startError}` : ''}
+          </p>
+          {startError && (
+            <button
+              onClick={() => void startSession()}
+              className="mt-4 px-4 py-2 bg-ink text-paper rounded-full text-sm font-medium hover:opacity-90"
+            >
+              Retry Connection
+            </button>
           )}
-          {phase === 'consent' && <ConsentView />}
-          {phase === 'live' && (
-            <LiveView onGoToTimeline={() => void endAndDebrief()} />
-          )}
-          {phase === 'debrief' && <DebriefView />}
-          {phase === 'timeline' && <TimelineView />}
-          {phase === 'stats' && <StatsView />}
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      )}
+      {phase === 'consent' && <ConsentView />}
+      {phase === 'live' && (
+        <LiveView onGoToTimeline={() => void endAndDebrief()} />
+      )}
+      {phase === 'debrief' && <DebriefView />}
+      {phase === 'timeline' && <TimelineView />}
+      {phase === 'stats' && <StatsView />}
 
       <footer className="mt-12 pt-12 pb-8 border-t border-rule">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 items-start mb-8">
