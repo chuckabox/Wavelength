@@ -13,6 +13,22 @@ import {
 import { createEngagementState, updateEngagement, type EngagementState } from './engagement';
 import { estimateEmotion } from './estimateEmotion';
 import { drawFaceMesh } from './drawFaceMesh';
+import {
+  createRppgState,
+  pushRppgSample,
+  rppgReading,
+  updateRppg,
+  type RppgState,
+} from './rppg';
+import { sampleRoiGreen } from './roiSampler';
+
+export type PulseReading = {
+  waveform: number[];
+  bpm: number | null;
+  conf: number;
+  arousal: number;
+  hasBaseline: boolean;
+};
 
 const WASM_ROOT =
   'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm';
@@ -48,9 +64,19 @@ export function useMediaPipe({
   const [error, setError] = useState<string | null>(null);
   const landmarkerRef = useRef<FaceLandmarker | null>(null);
   const engRef = useRef<EngagementState>(createEngagementState());
+  const rppgRef = useRef<RppgState>(createRppgState());
+  const pulseRef = useRef<PulseReading>({
+    waveform: [],
+    bpm: null,
+    conf: 0,
+    arousal: 0.5,
+    hasBaseline: false,
+  });
   const lastVideoTime = useRef(-1);
   const lastEmitT = useRef(-Infinity);
   const iodBaseline = useRef<number | null>(null);
+  const prevLandmarks = useRef<Array<{ x: number; y: number }> | null>(null);
+  const motionEma = useRef(0);
   const onFrameRef = useRef(onFrame);
   onFrameRef.current = onFrame;
   const startedRef = useRef(startedAtMs);
@@ -71,7 +97,10 @@ export function useMediaPipe({
     setStatus('loading');
     setError(null);
     engRef.current = createEngagementState();
+    rppgRef.current = createRppgState();
     iodBaseline.current = null;
+    prevLandmarks.current = null;
+    motionEma.current = 0;
     lastEmitT.current = -Infinity;
 
     async function init() {
@@ -180,6 +209,39 @@ export function useMediaPipe({
       });
       engRef.current = state;
 
+      // rPPG — the involuntary "body" channel. Sample the skin ROI every frame
+      // (not just at emit cadence) for temporal resolution, then read the pulse.
+      if (facePresent && landmarks) {
+        const green = sampleRoiGreen(el, landmarks);
+        if (green != null) {
+          pushRppgSample(rppgRef.current, t, green);
+          updateRppg(rppgRef.current, t);
+        }
+      }
+      const rp = rppgReading(rppgRef.current);
+      pulseRef.current = { ...rp, waveform: rppgRef.current.waveform };
+
+      // Motion energy (MEA-style frame differencing): mean landmark displacement
+      // frame-to-frame. Substrate for the attunement / responsiveness read.
+      let motionEnergy = motionEma.current;
+      if (landmarks && facePresent) {
+        const prev = prevLandmarks.current;
+        if (prev && prev.length === landmarks.length) {
+          let sum = 0;
+          let count = 0;
+          for (let i = 0; i < landmarks.length; i += 8) {
+            const a = landmarks[i]!;
+            const b = prev[i]!;
+            sum += Math.hypot(a.x - b.x, a.y - b.y);
+            count++;
+          }
+          const raw = count > 0 ? (sum / count) * 30 : 0; // gain into ~0–1
+          motionEma.current = motionEma.current * 0.7 + Math.min(1, raw) * 0.3;
+          motionEnergy = motionEma.current;
+        }
+        prevLandmarks.current = landmarks.map((p) => ({ x: p.x, y: p.y }));
+      }
+
       const emotions = estimateEmotion(raw);
 
       if (facePresent && t - lastEmitT.current >= EMIT_INTERVAL_S) {
@@ -193,6 +255,10 @@ export function useMediaPipe({
             emotionPositive: emotions.positive,
             emotionTense: emotions.tense,
             emotionUncertain: emotions.uncertain,
+            motionEnergy,
+            ...(rp.bpm != null
+              ? { bpm: rp.bpm, pulseConf: rp.conf, arousal: rp.arousal }
+              : {}),
           },
           t: Math.round(t * 1000) / 1000,
         });
@@ -203,5 +269,5 @@ export function useMediaPipe({
     return () => cancelAnimationFrame(rafRef.current);
   }, [enabled, status, video]);
 
-  return { status, error };
+  return { status, error, pulseRef };
 }
