@@ -36,9 +36,9 @@ S2  01:00  Uh, not off the top of my head. I might grab a coffee actually, good 
 {
   "summary": "You came across as knowledgeable and genuine, and being open about being autistic is completely fine. The conversation went quiet mainly because of timing and balance: a long stretch about your projects with no question back, then the disclosure very early before you two had any rapport. Small changes to when and how, not whether, would help a lot.",
   "metrics": {
-    "user_talk_ratio": 0.78,
-    "questions_asked_by_user": 1,
-    "questions_asked_by_other": 2,
+    "user_talk_ratio": 0.66,
+    "questions_asked_by_user": 2,
+    "questions_asked_by_other": 1,
     "longest_user_monologue_seconds": 32
   },
   "moments": [
@@ -73,13 +73,13 @@ S2  01:00  Uh, not off the top of my head. I might grab a coffee actually, good 
   "patterns": [
     {
       "label": "reciprocal questions",
-      "finding": "You asked one question the whole conversation, and it was technical, not about Alex.",
+      "finding": "You asked two questions, but neither was about Alex: one was logistics ('is this seat taken?'), one was technical.",
       "coaching": "Aim for at least one question about the other person in the first minute. A simple rule: after you share something, ask them the same thing back.",
       "recurring": false
     },
     {
       "label": "talk-time balance",
-      "finding": "You spoke about 78% of the time.",
+      "finding": "You spoke about 66% of the time.",
       "coaching": "Target closer to 50/50 early on. If you've said three sentences in a row, that's your cue to hand it back.",
       "recurring": false
     }

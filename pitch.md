@@ -1,4 +1,4 @@
-# Pitch — Conversation Debrief for Neurodivergent Networking (working title)
+# Wavelength — Conversation Debrief for Neurodivergent Networking
 
 > Living context doc for our final idea. Everything the team needs for the build and the
 > 2-minute judge pitch goes here. Status: **idea locked. Mode locked to post-conversation
