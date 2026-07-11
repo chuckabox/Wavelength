@@ -41,6 +41,15 @@ export function useSyntheticLoop(
       const browFurrow = window.__wlDip ? 0.45 : 0.08;
       const browRaise = window.__wlDip ? 0.35 : 0.1;
       const jawOpen = 0.05 + 0.04 * Math.sin(t * 2);
+      // Body channel: as engagement falls (the dip), arousal + heart rate climb —
+      // the face reads flat/disengaged while the body tenses. That divergence is
+      // "The Tell" the debrief is built to surface.
+      const arousal = Math.max(0, Math.min(1, 0.5 + (0.72 - engagement) * 1.5));
+      const bpm = Math.round(62 + arousal * 22 + 1.5 * Math.sin(t / 4));
+      const motionEnergy = Math.max(
+        0,
+        Math.min(1, (jawOpen > 0.08 ? 0.32 : 0.12) + 0.1 * Math.sin(t * 1.3)),
+      );
       const emotions = estimateEmotion({
         smile,
         browRaise,
@@ -62,6 +71,10 @@ export function useSyntheticLoop(
           browRaise,
           jawOpen,
           talking: jawOpen > 0.08 ? 0.4 : 0.05,
+          bpm,
+          pulseConf: 0.7,
+          arousal,
+          motionEnergy,
           emotionCalm: emotions.calm,
           emotionPositive: emotions.positive,
           emotionTense: emotions.tense,

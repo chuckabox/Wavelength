@@ -49,6 +49,51 @@ function pct(n: number | undefined) {
   return Math.round((n ?? 0) * 100);
 }
 
+/** A tiny pulse trace. Uses the real detrended rPPG waveform when present,
+ *  otherwise draws a modeled sine at the given BPM (synthetic mode). */
+function PulseSparkline({
+  waveform,
+  bpm,
+  phase,
+  active,
+}: {
+  waveform: number[];
+  bpm: number | null;
+  phase: number;
+  active: boolean;
+}) {
+  const W = 320;
+  const H = 44;
+  let vals = waveform;
+  if (vals.length < 8) {
+    const f = (bpm ?? 72) / 60;
+    vals = Array.from({ length: 72 }, (_, i) => {
+      const tt = (i / 72) * 3;
+      return Math.sin(2 * Math.PI * f * tt + phase);
+    });
+  }
+  const n = vals.length;
+  const pts = vals
+    .map((v, i) => {
+      const x = (i / (n - 1)) * W;
+      const y = H / 2 - v * (H / 2 - 4);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(' ');
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-11" preserveAspectRatio="none" aria-hidden>
+      <polyline
+        points={pts}
+        fill="none"
+        stroke="var(--color-alert)"
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+        opacity={active ? 0.95 : 0.4}
+      />
+    </svg>
+  );
+}
+
 function formatTime(t: number) {
   const m = Math.floor(t / 60);
   const s = Math.floor(t % 60);
@@ -153,7 +198,7 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
   const wantMediaPipe =
     Boolean(sessionId) && videoSource === 'camera' && !forceSynthetic();
 
-  const { status: mpStatus, error: mpError } = useMediaPipe({
+  const { status: mpStatus, error: mpError, pulseRef } = useMediaPipe({
     enabled: wantMediaPipe,
     video: videoEl,
     startedAtMs,
@@ -243,6 +288,23 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
 
   const confPct =
     latest?.confidence === 'high' ? 88 : latest?.confidence === 'medium' ? 64 : latest ? 42 : 0;
+
+  const body = useMemo(() => {
+    const bpmRaw = latest?.signals?.bpm;
+    const arousal = latest?.signals?.arousal ?? null;
+    const conf = latest?.signals?.pulseConf ?? 0;
+    const confLabel = conf > 0.5 ? 'high' : conf > 0.25 ? 'medium' : 'low';
+    // Live divergence hint: face reads steady/positive while the body is aroused.
+    const faceCalm = (latest?.emotions?.positive ?? 0) + (latest?.emotions?.calm ?? 0);
+    const diverging = arousal != null && arousal > 0.62 && faceCalm > 0.5;
+    return {
+      bpm: typeof bpmRaw === 'number' ? Math.round(bpmRaw) : null,
+      arousal,
+      conf,
+      confLabel,
+      diverging,
+    };
+  }, [latest]);
 
   const signalRows = [
     { label: 'Engagement', width: pct(latest?.engagement), variant: 'accent' },
@@ -406,6 +468,61 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
                     ? ` · holding ~${Math.round(talkStats.floorSec)}s`
                     : ''}
                 </p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Body</CardTitle>
+              <CardDescription>rPPG · pulse from webcam · experimental</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {body.bpm == null ? (
+                <p className="text-[13px] text-ink-3">
+                  Reading pulse from skin colour… hold still ~6s.
+                </p>
+              ) : (
+                <>
+                  <div className="flex items-end justify-between gap-3">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="font-mono text-[34px] leading-none font-light text-ink tabular-nums">
+                        {body.bpm}
+                      </span>
+                      <span className="font-mono text-xs text-ink-3">bpm</span>
+                    </div>
+                    <Badge
+                      size="sm"
+                      variant={body.confLabel === 'low' ? 'alert' : 'accent'}
+                    >
+                      {body.confLabel}
+                    </Badge>
+                  </div>
+                  <PulseSparkline
+                    waveform={pulseRef?.current.waveform ?? []}
+                    bpm={body.bpm}
+                    phase={(latest?.t ?? 0) * 6}
+                    active={body.conf > 0.25}
+                  />
+                  <div className="grid grid-cols-[88px_1fr_40px] items-center gap-2.5 mt-1">
+                    <span className="text-[13px] text-ink-2">Arousal</span>
+                    <BarTrack
+                      width={pct(body.arousal ?? 0.5)}
+                      variant={(body.arousal ?? 0) > 0.62 ? 'alert' : 'accent'}
+                    />
+                    <span className="font-mono text-xs font-medium text-ink min-w-[36px] text-right">
+                      {pct(body.arousal ?? 0.5)}%
+                    </span>
+                  </div>
+                  {body.diverging && (
+                    <p className="font-mono text-[11px] text-alert mt-2.5 leading-relaxed">
+                      face steady · body active — worth a look
+                    </p>
+                  )}
+                  <p className="font-mono text-[10px] text-ink-3 mt-2 leading-relaxed">
+                    Involuntary signal · relative to their own baseline · not a diagnosis
+                  </p>
+                </>
               )}
             </CardContent>
           </Card>
