@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Header from './components/Header';
 import LiveView from './components/LiveView';
-import LandingPage from './components/LandingPage';
 import ConsentView from './components/ConsentView';
 import DebriefView from './components/DebriefView';
 import StatsView from './components/StatsView';
