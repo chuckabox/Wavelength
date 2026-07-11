@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { SignalFrame } from 'shared';
+import { estimateEmotion } from './estimateEmotion';
 
 declare global {
   interface Window {
@@ -7,7 +8,7 @@ declare global {
   }
 }
 
-/** Produces a gentle sine engagement curve; press B in LIVE to dip (dev rehearsal aid). */
+/** Produces a gentle sine engagement curve at 5 Hz; press B in LIVE to dip (dev rehearsal aid). */
 export function useSyntheticLoop(
   enabled: boolean,
   onFrame: (frame: SignalFrame) => void,
@@ -34,19 +35,42 @@ export function useSyntheticLoop(
       const dip = window.__wlDip ? 0.28 : 0;
       const engagement = Math.max(0, Math.min(1, 0.72 + 0.12 * Math.sin(t / 8) - dip));
       const attention = Math.max(0, Math.min(1, engagement * 0.95 - (window.__wlDip ? 0.15 : 0)));
+      const smile = engagement * 0.45;
+      const gazeAway = 1 - attention;
+      const lean = engagement * 0.3;
+      const browFurrow = window.__wlDip ? 0.45 : 0.08;
+      const browRaise = window.__wlDip ? 0.35 : 0.1;
+      const jawOpen = 0.05 + 0.04 * Math.sin(t * 2);
+      const emotions = estimateEmotion({
+        smile,
+        browRaise,
+        browFurrow,
+        eyeOpenness: 0.85,
+        gazeAway,
+        jawOpen,
+      });
       onFrameRef.current({
-        t: Math.round(t * 10) / 10,
+        t: Math.round(t * 1000) / 1000,
         engagement,
         attention,
         valence: Math.max(-1, Math.min(1, (engagement - 0.5) * 1.2)),
         signals: {
-          smile: engagement * 0.45,
-          gazeAway: 1 - attention,
-          lean: engagement * 0.3,
+          smile,
+          gazeAway,
+          lean,
+          browFurrow,
+          browRaise,
+          jawOpen,
+          talking: jawOpen > 0.08 ? 0.4 : 0.05,
+          emotionCalm: emotions.calm,
+          emotionPositive: emotions.positive,
+          emotionTense: emotions.tense,
+          emotionUncertain: emotions.uncertain,
         },
+        emotions,
         confidence: engagement < 0.45 ? 'high' : engagement < 0.6 ? 'medium' : 'low',
       });
-    }, 1000);
+    }, 200);
 
     return () => {
       clearInterval(id);

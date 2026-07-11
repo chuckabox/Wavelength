@@ -11,35 +11,54 @@ import {
   interocularDistance,
 } from './deriveSignals';
 import { createEngagementState, updateEngagement, type EngagementState } from './engagement';
+import { estimateEmotion } from './estimateEmotion';
+import { drawFaceMesh } from './drawFaceMesh';
 
 const WASM_ROOT =
   'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm';
 const MODEL_URL =
   'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
 
+/** Emit SignalFrames at 5 Hz (every 200 ms). */
+const EMIT_INTERVAL_S = 0.2;
+
 type Options = {
   enabled: boolean;
   video: HTMLVideoElement | null;
   startedAtMs: number | null;
   onFrame: (frame: SignalFrame) => void;
+  /** When set and meshEnabled, draw a light landmark overlay into this canvas. */
+  meshCanvas?: HTMLCanvasElement | null;
+  meshEnabled?: boolean;
 };
 
 /**
  * Runs Face Landmarker ~12 Hz when `enabled` and video has a stream.
- * Emits 1 Hz SignalFrames via onFrame (downsampled).
+ * Emits ~5 Hz SignalFrames via onFrame (downsampled).
  */
-export function useMediaPipe({ enabled, video, startedAtMs, onFrame }: Options) {
+export function useMediaPipe({
+  enabled,
+  video,
+  startedAtMs,
+  onFrame,
+  meshCanvas = null,
+  meshEnabled = true,
+}: Options) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
   const landmarkerRef = useRef<FaceLandmarker | null>(null);
   const engRef = useRef<EngagementState>(createEngagementState());
   const lastVideoTime = useRef(-1);
-  const lastEmitSec = useRef(-1);
+  const lastEmitT = useRef(-Infinity);
   const iodBaseline = useRef<number | null>(null);
   const onFrameRef = useRef(onFrame);
   onFrameRef.current = onFrame;
   const startedRef = useRef(startedAtMs);
   startedRef.current = startedAtMs;
+  const meshCanvasRef = useRef(meshCanvas);
+  meshCanvasRef.current = meshCanvas;
+  const meshEnabledRef = useRef(meshEnabled);
+  meshEnabledRef.current = meshEnabled;
   const rafRef = useRef<number>(0);
 
   useEffect(() => {
@@ -53,7 +72,7 @@ export function useMediaPipe({ enabled, video, startedAtMs, onFrame }: Options) 
     setError(null);
     engRef.current = createEngagementState();
     iodBaseline.current = null;
-    lastEmitSec.current = -1;
+    lastEmitT.current = -Infinity;
 
     async function init() {
       try {
@@ -88,6 +107,11 @@ export function useMediaPipe({ enabled, video, startedAtMs, onFrame }: Options) 
       cancelled = true;
       landmarkerRef.current?.close();
       landmarkerRef.current = null;
+      const canvas = meshCanvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx?.clearRect(0, 0, canvas.width, canvas.height);
+      }
     };
   }, [enabled]);
 
@@ -107,21 +131,38 @@ export function useMediaPipe({ enabled, video, startedAtMs, onFrame }: Options) 
           } catch (err) {
             console.warn('detectForVideo', err);
           }
-          if (result) processResult(result);
+          if (result) processResult(result, el);
         }
       }
       rafRef.current = requestAnimationFrame(loop);
     };
 
-    const processResult = (result: FaceLandmarkerResult) => {
+    const processResult = (result: FaceLandmarkerResult, el: HTMLVideoElement) => {
       const t0 = startedRef.current ?? Date.now();
       const t = (Date.now() - t0) / 1000;
       const facePresent = (result.faceLandmarks?.length ?? 0) > 0;
+      const landmarks = result.faceLandmarks?.[0];
+
+      const canvas = meshCanvasRef.current;
+      if (canvas && meshEnabledRef.current && landmarks && facePresent) {
+        const w = el.clientWidth || el.videoWidth;
+        const h = el.clientHeight || el.videoHeight;
+        if (canvas.width !== w || canvas.height !== h) {
+          canvas.width = w;
+          canvas.height = h;
+        }
+        const ctx = canvas.getContext('2d');
+        if (ctx) drawFaceMesh(ctx, landmarks, w, h);
+      } else if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx?.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
       const cats = result.faceBlendshapes?.[0]?.categories;
       const shapes = blendshapeMap(cats);
       const matrix = result.facialTransformationMatrixes?.[0]?.data as number[] | undefined;
       const raw = deriveRawSignals(shapes, matrix);
-      const iod = interocularDistance(result.faceLandmarks?.[0]);
+      const iod = interocularDistance(landmarks);
       if (iod != null) {
         if (iodBaseline.current == null) iodBaseline.current = iod;
         else iodBaseline.current = iodBaseline.current * 0.98 + iod * 0.02;
@@ -139,10 +180,22 @@ export function useMediaPipe({ enabled, video, startedAtMs, onFrame }: Options) 
       });
       engRef.current = state;
 
-      const sec = Math.floor(t);
-      if (sec !== lastEmitSec.current && facePresent) {
-        lastEmitSec.current = sec;
-        onFrameRef.current({ ...frame, t: sec });
+      const emotions = estimateEmotion(raw);
+
+      if (facePresent && t - lastEmitT.current >= EMIT_INTERVAL_S) {
+        lastEmitT.current = t;
+        onFrameRef.current({
+          ...frame,
+          emotions,
+          signals: {
+            ...frame.signals,
+            emotionCalm: emotions.calm,
+            emotionPositive: emotions.positive,
+            emotionTense: emotions.tense,
+            emotionUncertain: emotions.uncertain,
+          },
+          t: Math.round(t * 1000) / 1000,
+        });
       }
     };
 
