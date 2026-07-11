@@ -1,0 +1,262 @@
+<title>Wavelength — Style Comparison</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a1a;
+    color: #e0e0e0;
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    padding: 32px 24px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 36px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 28px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: #222;
+    border: 1px solid #333;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid #333;
+  }
+
+  .card-name {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .card-desc {
+    font-size: 12px;
+    color: #888;
+  }
+
+  .palette {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .preview-wrap {
+    position: relative;
+    width: 100%;
+    padding-top: 75%;
+    overflow: hidden;
+    background: #111;
+  }
+
+  .preview-wrap iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    border: none;
+    transform: scale(0.5);
+    transform-origin: top left;
+    pointer-events: none;
+  }
+
+  .card-footer {
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #333;
+  }
+
+  .traits {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .trait {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #2a2a2a;
+    color: #aaa;
+    border: 1px solid #333;
+  }
+
+  .file-link {
+    font-size: 12px;
+    color: #666;
+    font-family: monospace;
+  }
+
+  @media (max-width: 500px) {
+    .grid { grid-template-columns: 1fr; }
+    body { padding: 16px; }
+  }
+</style>
+
+<h1>Wavelength Style Comparison</h1>
+<p class="subtitle">5 neurodivergent-friendly design directions — all use Lexend, generous spacing, no animation</p>
+
+<div class="grid">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-name">01 — Warm Stone</div>
+        <div class="card-desc">Sage-teal accent on warm stone ground</div>
+      </div>
+      <div class="palette">
+        <div class="swatch" style="background:#F4F1EB"></div>
+        <div class="swatch" style="background:#4A8B7F"></div>
+        <div class="swatch" style="background:#C44B42"></div>
+        <div class="swatch" style="background:#2D2A26"></div>
+      </div>
+    </div>
+    <div class="preview-wrap">
+      <iframe src="01-warm-stone.html" loading="lazy"></iframe>
+    </div>
+    <div class="card-footer">
+      <div class="traits">
+        <span class="trait">warm</span>
+        <span class="trait">earthy</span>
+        <span class="trait">grounded</span>
+      </div>
+      <span class="file-link">01-warm-stone.html</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-name">02 — Soft Ink</div>
+        <div class="card-desc">Crisp blue ink on warm cream paper</div>
+      </div>
+      <div class="palette">
+        <div class="swatch" style="background:#FDFBF7"></div>
+        <div class="swatch" style="background:#2B6CB0"></div>
+        <div class="swatch" style="background:#B44D3D"></div>
+        <div class="swatch" style="background:#1A1A1A"></div>
+      </div>
+    </div>
+    <div class="preview-wrap">
+      <iframe src="02-soft-ink.html" loading="lazy"></iframe>
+    </div>
+    <div class="card-footer">
+      <div class="traits">
+        <span class="trait">editorial</span>
+        <span class="trait">classic</span>
+        <span class="trait">trustworthy</span>
+      </div>
+      <span class="file-link">02-soft-ink.html</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-name">03 — Nordic Frost</div>
+        <div class="card-desc">Cool steel-blue on light grey ground</div>
+      </div>
+      <div class="palette">
+        <div class="swatch" style="background:#F0F2F5"></div>
+        <div class="swatch" style="background:#3B7A9E"></div>
+        <div class="swatch" style="background:#B85450"></div>
+        <div class="swatch" style="background:#1C2534"></div>
+      </div>
+    </div>
+    <div class="preview-wrap">
+      <iframe src="03-nordic-frost.html" loading="lazy"></iframe>
+    </div>
+    <div class="card-footer">
+      <div class="traits">
+        <span class="trait">clean</span>
+        <span class="trait">clinical</span>
+        <span class="trait">precise</span>
+      </div>
+      <span class="file-link">03-nordic-frost.html</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-name">04 — Dusk</div>
+        <div class="card-desc">Muted plum accent on lavender-grey</div>
+      </div>
+      <div class="palette">
+        <div class="swatch" style="background:#F3F0F5"></div>
+        <div class="swatch" style="background:#7B5EA7"></div>
+        <div class="swatch" style="background:#B5544E"></div>
+        <div class="swatch" style="background:#2A2438"></div>
+      </div>
+    </div>
+    <div class="preview-wrap">
+      <iframe src="04-dusk.html" loading="lazy"></iframe>
+    </div>
+    <div class="card-footer">
+      <div class="traits">
+        <span class="trait">calming</span>
+        <span class="trait">gentle</span>
+        <span class="trait">unique</span>
+      </div>
+      <span class="file-link">04-dusk.html</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-name">05 — Moss</div>
+        <div class="card-desc">Forest green accent on sage ground</div>
+      </div>
+      <div class="palette">
+        <div class="swatch" style="background:#EDEFE9"></div>
+        <div class="swatch" style="background:#5B7A4A"></div>
+        <div class="swatch" style="background:#A85545"></div>
+        <div class="swatch" style="background:#252B1F"></div>
+      </div>
+    </div>
+    <div class="preview-wrap">
+      <iframe src="05-moss.html" loading="lazy"></iframe>
+    </div>
+    <div class="card-footer">
+      <div class="traits">
+        <span class="trait">natural</span>
+        <span class="trait">organic</span>
+        <span class="trait">grounded</span>
+      </div>
+      <span class="file-link">05-moss.html</span>
+    </div>
+  </div>
+</div>

@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CueReader</title>
+<title>Wavelength</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 <style>
@@ -23,6 +23,8 @@
     --accent-text: #3A6F65;
     --alert: #C44B42;
     --alert-soft: #F5E0DE;
+    --warn: #B98A3D;
+    --warn-soft: #F3EBDC;
     --positive: #5A9A6E;
     --positive-soft: #E0F0E4;
     --neutral-soft: #E8E5DF;
@@ -56,7 +58,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 0 28px;
+    gap: 16px;
+    padding: 20px 0 24px;
   }
 
   .logo {
@@ -80,10 +83,36 @@
     flex-shrink: 0;
   }
 
-  .logo-mark svg {
-    width: 18px;
-    height: 18px;
+  .logo-mark svg { width: 18px; height: 18px; }
+
+  nav {
+    display: flex;
+    gap: 4px;
+    margin-right: auto;
+    margin-left: 16px;
   }
+
+  .nav-btn {
+    font-family: "Lexend", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 16px;
+    border: 1px solid transparent;
+    background: none;
+    color: var(--text-secondary);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .nav-btn:hover { color: var(--text); background: var(--neutral-soft); }
+
+  .nav-btn.active {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+
+  .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   .btn {
     font-family: "Lexend", sans-serif;
@@ -98,28 +127,21 @@
     letter-spacing: 0.01em;
   }
 
-  .btn:hover {
-    background: var(--bg);
-    border-color: var(--text-muted);
-  }
+  .btn:hover { background: var(--bg); border-color: var(--text-muted); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-  .btn:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
+  .btn--primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn--primary:hover { background: var(--accent-text); border-color: var(--accent-text); }
 
-  .btn--primary {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
+  /* ── Views ── */
+  .view { display: none; }
+  .view.active { display: block; }
 
-  .btn--primary:hover {
-    background: var(--accent-text);
-    border-color: var(--accent-text);
-  }
+  .view-header { margin-bottom: 20px; }
+  .view-title { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; }
+  .view-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
 
-  /* ── Main Grid ── */
+  /* ── Main Grid (Live) ── */
   .main-grid {
     display: grid;
     grid-template-columns: 1fr 380px;
@@ -127,12 +149,7 @@
     align-items: start;
   }
 
-  /* ── Camera ── */
-  .camera-area {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
+  .camera-area { display: flex; flex-direction: column; gap: 14px; }
 
   .camera-feed {
     aspect-ratio: 4 / 3;
@@ -144,11 +161,7 @@
     justify-content: center;
   }
 
-  .camera-placeholder {
-    text-align: center;
-    color: var(--text-muted);
-    padding: 24px;
-  }
+  .camera-placeholder { text-align: center; color: var(--text-muted); padding: 24px; }
 
   .cam-icon {
     width: 56px;
@@ -163,43 +176,20 @@
   }
 
   .cam-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 24px; height: 24px;
     stroke: var(--text-muted);
-    fill: none;
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    fill: none; stroke-width: 1.5;
+    stroke-linecap: round; stroke-linejoin: round;
   }
 
-  .camera-placeholder .title {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin-bottom: 4px;
-  }
+  .camera-placeholder .title { font-size: 15px; font-weight: 500; color: var(--text-secondary); margin-bottom: 4px; }
+  .camera-placeholder .subtitle { font-size: 13px; color: var(--text-muted); }
 
-  .camera-placeholder .subtitle {
-    font-size: 13px;
-    color: var(--text-muted);
-    font-weight: 400;
-  }
-
-  .camera-actions {
-    display: flex;
-    gap: 10px;
-  }
-
-  .camera-actions .btn {
-    flex: 1;
-  }
+  .camera-actions { display: flex; gap: 10px; }
+  .camera-actions .btn { flex: 1; }
 
   /* ── Panels ── */
-  .panels {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
+  .panels { display: flex; flex-direction: column; gap: 14px; }
 
   .panel {
     border: 1px solid var(--border);
@@ -215,71 +205,42 @@
     border-bottom: 1px solid var(--border);
   }
 
-  .panel-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: 0.01em;
-  }
+  .panel-title { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: 0.01em; }
+  .panel-meta { font-size: 12px; font-weight: 400; color: var(--text-muted); }
+  .panel-body { padding: 16px; }
 
-  .panel-meta {
+  .panel-link {
+    font-family: "Lexend", sans-serif;
     font-size: 12px;
-    font-weight: 400;
-    color: var(--text-muted);
+    font-weight: 500;
+    color: var(--accent-text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
   }
-
-  .panel-body {
-    padding: 16px;
-  }
+  .panel-link:hover { text-decoration: underline; }
+  .panel-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
 
   /* ── Face Detection ── */
-  .face-detect {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
+  .face-detect { display: flex; align-items: center; gap: 14px; }
 
   .face-avatar {
-    width: 44px;
-    height: 44px;
+    width: 44px; height: 44px;
     border: 1px solid var(--border);
     border-radius: 10px;
     background: var(--bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
 
-  .face-avatar svg {
-    width: 22px;
-    height: 22px;
-  }
+  .face-avatar svg { width: 22px; height: 22px; }
+  .face-avatar svg circle, .face-avatar svg ellipse { fill: none; stroke: var(--text-muted); stroke-width: 1.5; }
 
-  .face-avatar svg circle,
-  .face-avatar svg ellipse {
-    fill: none;
-    stroke: var(--text-muted);
-    stroke-width: 1.5;
-  }
+  .face-info { flex: 1; min-width: 0; }
+  .face-info .label { font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
 
-  .face-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .face-info .label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin-bottom: 6px;
-  }
-
-  .confidence-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .confidence-bar { display: flex; align-items: center; gap: 10px; }
 
   .bar-track {
     flex: 1;
@@ -289,14 +250,11 @@
     overflow: hidden;
   }
 
-  .bar-fill {
-    height: 100%;
-    border-radius: 3px;
-  }
-
+  .bar-fill { height: 100%; border-radius: 3px; }
   .bar-fill--accent { background: var(--accent); }
   .bar-fill--alert { background: var(--alert); }
   .bar-fill--positive { background: var(--positive); }
+  .bar-fill--warn { background: var(--warn); }
 
   .bar-value {
     font-size: 13px;
@@ -307,12 +265,7 @@
   }
 
   /* ── Interpretation ── */
-  .interpretation-text {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--text);
-    font-weight: 400;
-  }
+  .interpretation-text { font-size: 15px; line-height: 1.7; color: var(--text); font-weight: 400; }
 
   .highlight {
     background: var(--accent-soft);
@@ -334,11 +287,7 @@
   }
 
   /* ── Signals ── */
-  .signals-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
+  .signals-grid { display: flex; flex-direction: column; gap: 14px; }
 
   .signal-row {
     display: grid;
@@ -347,53 +296,19 @@
     gap: 10px;
   }
 
-  .signal-label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-  }
+  .signal-label { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
 
-  /* ── Dual Panel ── */
-  .dual-panel {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
+  .dual-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
   /* ── Audio ── */
-  .audio-metrics {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+  .audio-metrics { display: flex; flex-direction: column; gap: 12px; }
+  .audio-row { display: flex; justify-content: space-between; align-items: center; }
+  .audio-key { font-size: 13px; color: var(--text-secondary); font-weight: 400; }
+  .audio-val { font-size: 13px; font-weight: 500; color: var(--text); }
+  .audio-val--warn { color: var(--alert); }
 
-  .audio-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .audio-key {
-    font-size: 13px;
-    color: var(--text-secondary);
-    font-weight: 400;
-  }
-
-  .audio-val {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .audio-val--warn {
-    color: var(--alert);
-  }
-
-  /* ── Timeline ── */
-  .timeline {
-    display: flex;
-    flex-direction: column;
-  }
+  /* ── Timeline (shared) ── */
+  .timeline { display: flex; flex-direction: column; }
 
   .timeline-event {
     display: grid;
@@ -404,27 +319,11 @@
     align-items: center;
   }
 
-  .timeline-event:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-  }
+  .timeline-event:last-child { border-bottom: none; padding-bottom: 0; }
+  .timeline-event:first-child { padding-top: 0; }
 
-  .timeline-event:first-child {
-    padding-top: 0;
-  }
-
-  .t-time {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-  }
-
-  .t-desc {
-    font-size: 13px;
-    font-weight: 400;
-    color: var(--text);
-    line-height: 1.5;
-  }
+  .t-time { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+  .t-desc { font-size: 13px; font-weight: 400; color: var(--text); line-height: 1.5; }
 
   .t-tag {
     font-size: 11px;
@@ -434,33 +333,196 @@
     white-space: nowrap;
   }
 
-  .t-tag--alert {
-    background: var(--alert-soft);
-    color: var(--alert);
+  .t-tag--alert { background: var(--alert-soft); color: var(--alert); }
+  .t-tag--positive { background: var(--positive-soft); color: var(--positive); }
+  .t-tag--neutral { background: var(--neutral-soft); color: var(--text-muted); }
+
+  /* ── Stats: KPI tiles ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
   }
 
-  .t-tag--positive {
-    background: var(--positive-soft);
-    color: var(--positive);
+  .stat-tile {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    padding: 14px 16px;
   }
 
-  .t-tag--neutral {
-    background: var(--neutral-soft);
+  .stat-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
+
+  .stat-value {
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    font-variant-numeric: normal;
+  }
+
+  .stat-value .unit { font-size: 14px; font-weight: 400; color: var(--text-muted); margin-left: 2px; }
+
+  .stat-delta { font-size: 12px; font-weight: 500; margin-top: 6px; }
+  .stat-delta--up { color: var(--positive); }
+  .stat-delta--down { color: var(--alert); }
+  .stat-delta--flat { color: var(--text-muted); }
+
+  /* ── Stats: layout ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .stats-grid .panel--wide { grid-column: 1 / -1; }
+
+  /* ── Chart ── */
+  .chart-wrap { position: relative; }
+  .chart-wrap svg { display: block; width: 100%; height: auto; }
+
+  .chart-tooltip {
+    position: absolute;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--text);
+    pointer-events: none;
+    white-space: nowrap;
+    transform: translate(-50%, -100%);
+    display: none;
+  }
+
+  .chart-tooltip strong { font-weight: 600; }
+
+  .chart-table { margin-top: 10px; }
+  .chart-table summary {
+    font-size: 12px;
+    font-weight: 500;
     color: var(--text-muted);
+    cursor: pointer;
   }
+  .chart-table summary:hover { color: var(--text-secondary); }
+  .chart-table table { border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+  .chart-table th, .chart-table td {
+    text-align: left;
+    padding: 4px 14px 4px 0;
+    color: var(--text-secondary);
+    font-weight: 400;
+    border-bottom: 1px solid var(--bar-track);
+  }
+  .chart-table th { font-weight: 500; color: var(--text); }
+
+  /* ── Stats: emotion bars ── */
+  .emotion-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .emotion-row {
+    display: grid;
+    grid-template-columns: 88px 1fr 34px;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .emotion-label { font-size: 13px; font-weight: 500; color: var(--text-secondary); }
+
+  .emotion-track { height: 14px; background: var(--bar-track); border-radius: 4px; overflow: hidden; }
+  .emotion-fill { height: 100%; border-radius: 0 4px 4px 0; }
+
+  .emotion-section {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 4px 0 2px;
+  }
+
+  .emotion-section:first-child { margin-top: 0; }
+
+  /* ── Stats: focus cards ── */
+  .focus-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .focus-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    background: var(--bg);
+  }
+
+  .focus-card-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .focus-chip {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  .focus-chip--work { background: var(--warn-soft); color: var(--warn); }
+  .focus-chip--strength { background: var(--positive-soft); color: var(--positive); }
+
+  .focus-card-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+  /* ── Timeline view ── */
+  .filter-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+
+  .chip {
+    font-family: "Lexend", sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  .chip:hover { border-color: var(--border-strong); color: var(--text); }
+  .chip.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
+  .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .session-summary {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+
+  .session-summary strong { color: var(--text); font-weight: 600; }
+
+  .timeline-full .timeline-event { padding: 12px 0; }
+  .timeline-full .timeline-event[hidden] { display: none; }
 
   /* ── Responsive ── */
-  @media (max-width: 860px) {
-    .main-grid {
-      grid-template-columns: 1fr;
-    }
+  @media (max-width: 900px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .stat-row { grid-template-columns: repeat(2, 1fr); }
   }
 
-  @media (max-width: 520px) {
+  @media (max-width: 560px) {
     .app { padding: 0 16px 32px; }
+    header { flex-wrap: wrap; }
+    nav { order: 3; width: 100%; margin: 0; }
     .camera-actions { flex-wrap: wrap; }
     .camera-actions .btn { flex: 1 1 auto; min-width: 120px; }
     .dual-panel { grid-template-columns: 1fr; }
+    .stat-row { grid-template-columns: 1fr 1fr; }
   }
 </style>
 
@@ -469,102 +531,61 @@
     <div class="logo">
       <div class="logo-mark">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="8" stroke="#fff" stroke-width="1.5" fill="none"/>
-          <circle cx="12" cy="12" r="3.5" fill="#fff"/>
+          <path d="M2 12c2.5 0 2.5-6 5-6s2.5 12 5 12 2.5-12 5-12 2.5 6 5 6" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/>
         </svg>
       </div>
-      CueReader
+      Wavelength
     </div>
+    <nav aria-label="Main">
+      <button class="nav-btn active" data-view="live">Live</button>
+      <button class="nav-btn" data-view="stats">Stats</button>
+      <button class="nav-btn" data-view="timeline">Timeline</button>
+    </nav>
     <button class="btn">Settings</button>
   </header>
 
-  <div class="main-grid">
-    <div class="camera-area">
-      <div class="camera-feed">
-        <div class="camera-placeholder">
-          <div class="cam-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <rect x="2" y="6" width="15" height="13" rx="2"/>
-              <path d="M17 10l4-2.5v9L17 14"/>
-            </svg>
-          </div>
-          <p class="title">Camera Feed</p>
-          <p class="subtitle">Press Start to begin reading</p>
-        </div>
-      </div>
-      <div class="camera-actions">
-        <button class="btn btn--primary">Start</button>
-        <button class="btn">Upload Clip</button>
-      </div>
-    </div>
-
-    <div class="panels">
-      <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">Detected Face</span>
-          <span class="panel-meta">1 subject</span>
-        </div>
-        <div class="panel-body">
-          <div class="face-detect">
-            <div class="face-avatar">
+  <!-- ══════════ LIVE ══════════ -->
+  <section class="view active" id="view-live">
+    <div class="main-grid">
+      <div class="camera-area">
+        <div class="camera-feed">
+          <div class="camera-placeholder">
+            <div class="cam-icon">
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="9" r="4"/>
-                <ellipse cx="12" cy="21" rx="7" ry="5.5"/>
+                <rect x="2" y="6" width="15" height="13" rx="2"/>
+                <path d="M17 10l4-2.5v9L17 14"/>
               </svg>
             </div>
-            <div class="face-info">
-              <div class="label">Confidence</div>
-              <div class="confidence-bar">
-                <div class="bar-track">
-                  <div class="bar-fill bar-fill--accent" style="width: 78%"></div>
-                </div>
-                <span class="bar-value">78%</span>
-              </div>
-            </div>
+            <p class="title">Camera Feed</p>
+            <p class="subtitle">Press Start to begin reading</p>
           </div>
         </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">Interpretation</span>
-          <span class="panel-meta">2s ago</span>
-        </div>
-        <div class="panel-body">
-          <p class="interpretation-text">
-            She crossed her arms and is giving shorter answers. This often signals <span class="highlight">disengagement</span> or discomfort with the current topic. Consider shifting to an open-ended question.
-          </p>
-          <span class="cue-tag">Disengagement</span>
+        <div class="camera-actions">
+          <button class="btn btn--primary">Start</button>
+          <button class="btn">Upload Clip</button>
         </div>
       </div>
 
-      <div class="dual-panel">
+      <div class="panels">
         <div class="panel">
           <div class="panel-header">
-            <span class="panel-title">Signals</span>
+            <span class="panel-title">Detected Face</span>
+            <span class="panel-meta">1 subject</span>
           </div>
           <div class="panel-body">
-            <div class="signals-grid">
-              <div class="signal-row">
-                <span class="signal-label">Happiness</span>
-                <div class="bar-track">
-                  <div class="bar-fill bar-fill--positive" style="width: 35%"></div>
-                </div>
-                <span class="bar-value">35%</span>
+            <div class="face-detect">
+              <div class="face-avatar">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="9" r="4"/>
+                  <ellipse cx="12" cy="21" rx="7" ry="5.5"/>
+                </svg>
               </div>
-              <div class="signal-row">
-                <span class="signal-label">Tension</span>
-                <div class="bar-track">
-                  <div class="bar-fill bar-fill--alert" style="width: 62%"></div>
+              <div class="face-info">
+                <div class="label">Confidence</div>
+                <div class="confidence-bar">
+                  <div class="bar-track"><div class="bar-fill bar-fill--accent" style="width: 78%"></div></div>
+                  <span class="bar-value">78%</span>
                 </div>
-                <span class="bar-value">62%</span>
-              </div>
-              <div class="signal-row">
-                <span class="signal-label">Interest</span>
-                <div class="bar-track">
-                  <div class="bar-fill bar-fill--accent" style="width: 28%"></div>
-                </div>
-                <span class="bar-value">28%</span>
               </div>
             </div>
           </div>
@@ -572,54 +593,389 @@
 
         <div class="panel">
           <div class="panel-header">
-            <span class="panel-title">Audio</span>
+            <span class="panel-title">Interpretation</span>
+            <span class="panel-meta">2s ago</span>
           </div>
           <div class="panel-body">
-            <div class="audio-metrics">
-              <div class="audio-row">
-                <span class="audio-key">Tone</span>
-                <span class="audio-val">Flat</span>
+            <p class="interpretation-text">
+              She crossed her arms and is giving shorter answers. This often signals <span class="highlight">disengagement</span> or discomfort with the current topic. Consider shifting to an open-ended question.
+            </p>
+            <span class="cue-tag">Disengagement</span>
+          </div>
+        </div>
+
+        <div class="dual-panel">
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Signals</span></div>
+            <div class="panel-body">
+              <div class="signals-grid">
+                <div class="signal-row">
+                  <span class="signal-label">Happiness</span>
+                  <div class="bar-track"><div class="bar-fill bar-fill--positive" style="width: 35%"></div></div>
+                  <span class="bar-value">35%</span>
+                </div>
+                <div class="signal-row">
+                  <span class="signal-label">Tension</span>
+                  <div class="bar-track"><div class="bar-fill bar-fill--alert" style="width: 62%"></div></div>
+                  <span class="bar-value">62%</span>
+                </div>
+                <div class="signal-row">
+                  <span class="signal-label">Interest</span>
+                  <div class="bar-track"><div class="bar-fill bar-fill--accent" style="width: 28%"></div></div>
+                  <span class="bar-value">28%</span>
+                </div>
               </div>
-              <div class="audio-row">
-                <span class="audio-key">Pace</span>
-                <span class="audio-val audio-val--warn">Slowing</span>
-              </div>
-              <div class="audio-row">
-                <span class="audio-key">Volume</span>
-                <span class="audio-val audio-val--warn">Dropping</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Audio</span></div>
+            <div class="panel-body">
+              <div class="audio-metrics">
+                <div class="audio-row"><span class="audio-key">Tone</span><span class="audio-val">Flat</span></div>
+                <div class="audio-row"><span class="audio-key">Pace</span><span class="audio-val audio-val--warn">Slowing</span></div>
+                <div class="audio-row"><span class="audio-key">Volume</span><span class="audio-val audio-val--warn">Dropping</span></div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="panel">
-        <div class="panel-header">
-          <span class="panel-title">Timeline</span>
-          <span class="panel-meta">3 events</span>
-        </div>
-        <div class="panel-body">
-          <div class="timeline">
-            <div class="timeline-event">
-              <span class="t-time">0:18</span>
-              <span class="t-desc">Vocal pace slowing, volume drop</span>
-              <span class="t-tag t-tag--neutral">Audio</span>
-            </div>
-            <div class="timeline-event">
-              <span class="t-time">0:12</span>
-              <span class="t-desc">Disengagement signals detected</span>
-              <span class="t-tag t-tag--alert">Alert</span>
-            </div>
-            <div class="timeline-event">
-              <span class="t-time">0:08</span>
-              <span class="t-desc">Active listening, leaning in</span>
-              <span class="t-tag t-tag--positive">Positive</span>
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Timeline</span>
+            <button class="panel-link" data-view-link="timeline">View full timeline</button>
+          </div>
+          <div class="panel-body">
+            <div class="timeline">
+              <div class="timeline-event">
+                <span class="t-time">0:18</span>
+                <span class="t-desc">Vocal pace slowing, volume drop</span>
+                <span class="t-tag t-tag--neutral">Audio</span>
+              </div>
+              <div class="timeline-event">
+                <span class="t-time">0:12</span>
+                <span class="t-desc">Disengagement signals detected</span>
+                <span class="t-tag t-tag--alert">Alert</span>
+              </div>
+              <div class="timeline-event">
+                <span class="t-time">0:08</span>
+                <span class="t-desc">Active listening, leaning in</span>
+                <span class="t-tag t-tag--positive">Positive</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- ══════════ STATS ══════════ -->
+  <section class="view" id="view-stats">
+    <div class="view-header">
+      <h2 class="view-title">How people experience you</h2>
+      <p class="view-sub">Across 12 practice sessions · last 30 days</p>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-tile">
+        <div class="stat-label">Overall perception</div>
+        <div class="stat-value">72<span class="unit">/100</span></div>
+        <div class="stat-delta stat-delta--up">+8 vs first 4 sessions</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Sessions analyzed</div>
+        <div class="stat-value">12</div>
+        <div class="stat-delta stat-delta--flat">last 30 days</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Average engagement</div>
+        <div class="stat-value">64<span class="unit">%</span></div>
+        <div class="stat-delta stat-delta--up">+5 vs last month</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Alerts per session</div>
+        <div class="stat-value">2.1</div>
+        <div class="stat-delta stat-delta--up">−0.8, improving</div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="panel panel--wide">
+        <div class="panel-header">
+          <span class="panel-title">Perception score over sessions</span>
+          <span class="panel-meta">12 sessions</span>
+        </div>
+        <div class="panel-body">
+          <div class="chart-wrap" id="trend-wrap">
+            <svg id="trend-svg" viewBox="0 0 648 240" role="img" aria-label="Line chart of perception score across 12 sessions, rising from 48 to 72">
+              <!-- gridlines -->
+              <line x1="44" y1="200" x2="620" y2="200" stroke="#ECEAE4" stroke-width="1"/>
+              <line x1="44" y1="156" x2="620" y2="156" stroke="#ECEAE4" stroke-width="1"/>
+              <line x1="44" y1="112" x2="620" y2="112" stroke="#ECEAE4" stroke-width="1"/>
+              <line x1="44" y1="68" x2="620" y2="68" stroke="#ECEAE4" stroke-width="1"/>
+              <line x1="44" y1="24" x2="620" y2="24" stroke="#ECEAE4" stroke-width="1"/>
+              <!-- y ticks -->
+              <text x="36" y="204" text-anchor="end" font-size="11" fill="#9B958C" font-family="Lexend, sans-serif">40</text>
+              <text x="36" y="160" text-anchor="end" font-size="11" fill="#9B958C" font-family="Lexend, sans-serif">50</text>
+              <text x="36" y="116" text-anchor="end" font-size="11" fill="#9B958C" font-family="Lexend, sans-serif">60</text>
+              <text x="36" y="72" text-anchor="end" font-size="11" fill="#9B958C" font-family="Lexend, sans-serif">70</text>
+              <text x="36" y="28" text-anchor="end" font-size="11" fill="#9B958C" font-family="Lexend, sans-serif">80</text>
+              <!-- x ticks -->
+              <text x="44" y="222" text-anchor="middle" font-size="11" fill="#9B958C" font-family="Lexend, sans-serif">1</text>
+              <text x="201" y="222" text-anchor="middle" font-size="11" fill="#9B958C" font-family="Lexend, sans-serif">4</text>
+              <text x="410" y="222" text-anchor="middle" font-size="11" fill="#9B958C" font-family="Lexend, sans-serif">8</text>
+              <text x="620" y="222" text-anchor="middle" font-size="11" fill="#9B958C" font-family="Lexend, sans-serif">12</text>
+              <text x="332" y="238" text-anchor="middle" font-size="11" fill="#9B958C" font-family="Lexend, sans-serif">Session</text>
+              <!-- area wash -->
+              <polygon points="44,164.8 96.4,147.2 148.7,156 201.1,125.2 253.5,134 305.8,107.6 358.2,120.8 410.5,98.8 462.9,81.2 515.3,94.4 567.6,68 620,59.2 620,200 44,200" fill="#4A8B7F" opacity="0.1"/>
+              <!-- line -->
+              <polyline points="44,164.8 96.4,147.2 148.7,156 201.1,125.2 253.5,134 305.8,107.6 358.2,120.8 410.5,98.8 462.9,81.2 515.3,94.4 567.6,68 620,59.2" fill="none" stroke="#4A8B7F" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+              <!-- crosshair + hover dot -->
+              <line id="crosshair" x1="0" y1="24" x2="0" y2="200" stroke="#C4BEB4" stroke-width="1" visibility="hidden"/>
+              <circle id="hover-dot" r="5" fill="#4A8B7F" stroke="#FEFDFB" stroke-width="2" visibility="hidden"/>
+              <!-- end marker + label -->
+              <circle cx="620" cy="59.2" r="4.5" fill="#4A8B7F" stroke="#FEFDFB" stroke-width="2"/>
+              <text x="614" y="48" text-anchor="end" font-size="12" font-weight="600" fill="#2D2A26" font-family="Lexend, sans-serif">72</text>
+            </svg>
+            <div class="chart-tooltip" id="trend-tooltip"></div>
+          </div>
+          <details class="chart-table">
+            <summary>View data as table</summary>
+            <table>
+              <thead><tr><th>Session</th><th>Score</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>48</td></tr><tr><td>2</td><td>52</td></tr>
+                <tr><td>3</td><td>50</td></tr><tr><td>4</td><td>57</td></tr>
+                <tr><td>5</td><td>55</td></tr><tr><td>6</td><td>61</td></tr>
+                <tr><td>7</td><td>58</td></tr><tr><td>8</td><td>63</td></tr>
+                <tr><td>9</td><td>67</td></tr><tr><td>10</td><td>64</td></tr>
+                <tr><td>11</td><td>70</td></tr><tr><td>12</td><td>72</td></tr>
+              </tbody>
+            </table>
+          </details>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Emotions you evoke</span>
+          <span class="panel-meta">avg across sessions</span>
+        </div>
+        <div class="panel-body">
+          <div class="emotion-list">
+            <div class="emotion-section">People felt</div>
+            <div class="emotion-row">
+              <span class="emotion-label">Warmth</span>
+              <div class="emotion-track"><div class="emotion-fill" style="width: 78%; background: var(--accent)"></div></div>
+              <span class="bar-value">78</span>
+            </div>
+            <div class="emotion-row">
+              <span class="emotion-label">Trust</span>
+              <div class="emotion-track"><div class="emotion-fill" style="width: 71%; background: var(--accent)"></div></div>
+              <span class="bar-value">71</span>
+            </div>
+            <div class="emotion-row">
+              <span class="emotion-label">Interest</span>
+              <div class="emotion-track"><div class="emotion-fill" style="width: 64%; background: var(--accent)"></div></div>
+              <span class="bar-value">64</span>
+            </div>
+            <div class="emotion-row">
+              <span class="emotion-label">Ease</span>
+              <div class="emotion-track"><div class="emotion-fill" style="width: 58%; background: var(--accent)"></div></div>
+              <span class="bar-value">58</span>
+            </div>
+            <div class="emotion-section">Watch areas</div>
+            <div class="emotion-row">
+              <span class="emotion-label">Tension</span>
+              <div class="emotion-track"><div class="emotion-fill" style="width: 34%; background: var(--warn)"></div></div>
+              <span class="bar-value">34</span>
+            </div>
+            <div class="emotion-row">
+              <span class="emotion-label">Confusion</span>
+              <div class="emotion-track"><div class="emotion-fill" style="width: 22%; background: var(--warn)"></div></div>
+              <span class="bar-value">22</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">What to focus on</span>
+          <span class="panel-meta">from your last 12 sessions</span>
+        </div>
+        <div class="panel-body">
+          <div class="focus-list">
+            <div class="focus-card">
+              <div class="focus-card-title">Give space before topic changes <span class="focus-chip focus-chip--work">Work on</span></div>
+              <p class="focus-card-text">Tension rose right after quick topic switches in 4 of your 6 alerts. Try pausing two to three seconds before moving to something new.</p>
+            </div>
+            <div class="focus-card">
+              <div class="focus-card-title">Re-engage around the 2-minute mark <span class="focus-chip focus-chip--work">Work on</span></div>
+              <p class="focus-card-text">Interest dips most between minutes 2 and 3. In three sessions, a follow-up question at that point brought engagement back up.</p>
+            </div>
+            <div class="focus-card">
+              <div class="focus-card-title">Keep your warm openings <span class="focus-chip focus-chip--strength">Strength</span></div>
+              <p class="focus-card-text">Warmth peaks in your first minute of every session. Your openings work — carry that same energy into topic changes.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ TIMELINE ══════════ -->
+  <section class="view" id="view-timeline">
+    <div class="view-header">
+      <h2 class="view-title">Session timeline</h2>
+      <p class="view-sub">Practice session · today · 5:24 long</p>
+    </div>
+
+    <div class="session-summary">
+      <span><strong>12</strong> events</span>
+      <span><strong>7</strong> positive</span>
+      <span><strong>3</strong> alerts</span>
+      <span><strong>2</strong> audio notes</span>
+    </div>
+
+    <div class="filter-row" role="group" aria-label="Filter timeline">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="positive">Positive</button>
+      <button class="chip" data-filter="alert">Alerts</button>
+      <button class="chip" data-filter="audio">Audio</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-body">
+        <div class="timeline timeline-full" id="full-timeline">
+          <div class="timeline-event" data-kind="positive">
+            <span class="t-time">5:12</span>
+            <span class="t-desc">Warm closing, extended goodbye</span>
+            <span class="t-tag t-tag--positive">Positive</span>
+          </div>
+          <div class="timeline-event" data-kind="positive">
+            <span class="t-time">4:47</span>
+            <span class="t-desc">Leaned in when you shared the story</span>
+            <span class="t-tag t-tag--positive">Positive</span>
+          </div>
+          <div class="timeline-event" data-kind="audio">
+            <span class="t-time">4:12</span>
+            <span class="t-desc">Vocal pace slowing, volume drop</span>
+            <span class="t-tag t-tag--neutral">Audio</span>
+          </div>
+          <div class="timeline-event" data-kind="alert">
+            <span class="t-time">3:51</span>
+            <span class="t-desc">Pace quickened, interrupted twice</span>
+            <span class="t-tag t-tag--alert">Alert</span>
+          </div>
+          <div class="timeline-event" data-kind="positive">
+            <span class="t-time">3:24</span>
+            <span class="t-desc">Relaxed posture, open gestures</span>
+            <span class="t-tag t-tag--positive">Positive</span>
+          </div>
+          <div class="timeline-event" data-kind="positive">
+            <span class="t-time">2:58</span>
+            <span class="t-desc">Re-engaged after your follow-up question</span>
+            <span class="t-tag t-tag--positive">Positive</span>
+          </div>
+          <div class="timeline-event" data-kind="alert">
+            <span class="t-time">2:26</span>
+            <span class="t-desc">Disengagement signals detected</span>
+            <span class="t-tag t-tag--alert">Alert</span>
+          </div>
+          <div class="timeline-event" data-kind="audio">
+            <span class="t-time">2:10</span>
+            <span class="t-desc">Vocal pitch dropped, shorter answers</span>
+            <span class="t-tag t-tag--neutral">Audio</span>
+          </div>
+          <div class="timeline-event" data-kind="alert">
+            <span class="t-time">1:41</span>
+            <span class="t-desc">Attention drifting, repeated glances away</span>
+            <span class="t-tag t-tag--alert">Alert</span>
+          </div>
+          <div class="timeline-event" data-kind="positive">
+            <span class="t-time">1:02</span>
+            <span class="t-desc">Nodding along, steady eye contact</span>
+            <span class="t-tag t-tag--positive">Positive</span>
+          </div>
+          <div class="timeline-event" data-kind="positive">
+            <span class="t-time">0:34</span>
+            <span class="t-desc">Smiled at your opening question</span>
+            <span class="t-tag t-tag--positive">Positive</span>
+          </div>
+          <div class="timeline-event" data-kind="positive">
+            <span class="t-time">0:08</span>
+            <span class="t-desc">Active listening, leaning in</span>
+            <span class="t-tag t-tag--positive">Positive</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
+
+<script>
+  // ── View switching ──
+  const views = document.querySelectorAll('.view');
+  const navBtns = document.querySelectorAll('.nav-btn');
+
+  function showView(name) {
+    views.forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+    navBtns.forEach(b => b.classList.toggle('active', b.dataset.view === name));
+    if (location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
+  }
+
+  navBtns.forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
+  document.querySelectorAll('[data-view-link]').forEach(el =>
+    el.addEventListener('click', () => showView(el.dataset.viewLink)));
+
+  const initial = location.hash.slice(1);
+  if (['live', 'stats', 'timeline'].includes(initial)) showView(initial);
+
+  // ── Timeline filters ──
+  const chips = document.querySelectorAll('.chip');
+  chips.forEach(chip => chip.addEventListener('click', () => {
+    chips.forEach(c => c.classList.toggle('active', c === chip));
+    const f = chip.dataset.filter;
+    document.querySelectorAll('#full-timeline .timeline-event').forEach(ev => {
+      ev.hidden = f !== 'all' && ev.dataset.kind !== f;
+    });
+  }));
+
+  // ── Trend chart hover ──
+  const trendData = [
+    [44, 164.8, 1, 48], [96.4, 147.2, 2, 52], [148.7, 156, 3, 50],
+    [201.1, 125.2, 4, 57], [253.5, 134, 5, 55], [305.8, 107.6, 6, 61],
+    [358.2, 120.8, 7, 58], [410.5, 98.8, 8, 63], [462.9, 81.2, 9, 67],
+    [515.3, 94.4, 10, 64], [567.6, 68, 11, 70], [620, 59.2, 12, 72]
+  ];
+  const svg = document.getElementById('trend-svg');
+  const tooltip = document.getElementById('trend-tooltip');
+  const crosshair = document.getElementById('crosshair');
+  const hoverDot = document.getElementById('hover-dot');
+
+  svg.addEventListener('mousemove', e => {
+    const r = svg.getBoundingClientRect();
+    const vx = (e.clientX - r.left) * 648 / r.width;
+    let nearest = trendData[0];
+    for (const p of trendData) if (Math.abs(p[0] - vx) < Math.abs(nearest[0] - vx)) nearest = p;
+    crosshair.setAttribute('x1', nearest[0]);
+    crosshair.setAttribute('x2', nearest[0]);
+    crosshair.setAttribute('visibility', 'visible');
+    hoverDot.setAttribute('cx', nearest[0]);
+    hoverDot.setAttribute('cy', nearest[1]);
+    hoverDot.setAttribute('visibility', 'visible');
+    tooltip.innerHTML = 'Session ' + nearest[2] + ' — <strong>' + nearest[3] + '</strong>';
+    tooltip.style.left = (nearest[0] / 648 * r.width) + 'px';
+    tooltip.style.top = (nearest[1] / 240 * r.height - 10) + 'px';
+    tooltip.style.display = 'block';
+  });
+
+  svg.addEventListener('mouseleave', () => {
+    crosshair.setAttribute('visibility', 'hidden');
+    hoverDot.setAttribute('visibility', 'hidden');
+    tooltip.style.display = 'none';
+  });
+</script>
 </body>
 </html>
