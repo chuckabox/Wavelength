@@ -1,3 +1,8 @@
+import { motion } from 'framer-motion'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/card'
+import { Badge } from './ui/badge'
+import { Button } from './ui/button'
+
 interface LiveViewProps {
   onGoToTimeline: () => void
 }
@@ -10,7 +15,12 @@ function BarTrack({ width, variant }: { width: number; variant: string }) {
   }
   return (
     <div className="flex-1 h-[5px] bg-bar-track rounded-[1px] overflow-hidden">
-      <div className={`h-full ${colors[variant] ?? 'bg-accent'}`} style={{ width: `${width}%` }} />
+      <motion.div
+        className={`h-full ${colors[variant] ?? 'bg-accent'}`}
+        initial={{ width: 0 }}
+        animate={{ width: `${width}%` }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      />
     </div>
   )
 }
@@ -45,9 +55,11 @@ function AudioMeter({
           className={`absolute top-0 h-full rounded-[1px] ${warn ? 'bg-alert-soft' : 'bg-accent-soft'}`}
           style={{ left: `${bandLeft}%`, width: `${bandWidth}%` }}
         />
-        <div
+        <motion.div
           className={`absolute -top-0.5 w-0.5 h-3 rounded-[1px] -translate-x-px ${warn ? 'bg-alert' : 'bg-ink'}`}
-          style={{ left: `${markerLeft}%` }}
+          initial={{ left: '50%' }}
+          animate={{ left: `${markerLeft}%` }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
         />
       </div>
       <span className={`font-mono text-[10px] tracking-[0.02em] ${warn ? 'text-alert' : 'text-ink-3'}`}>
@@ -83,125 +95,124 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
             </div>
           </div>
           <div className="flex gap-2.5">
-            <button className="flex-1 font-sans text-[13px] font-medium py-[9px] px-5 bg-ink text-paper border border-ink rounded-[2px] cursor-pointer tracking-[0.02em] hover:bg-[#3A362E] hover:border-[#3A362E]">
-              Start
-            </button>
-            <button className="flex-1 font-sans text-[13px] font-medium py-[9px] px-5 bg-transparent text-ink border border-ink-3 rounded-[2px] cursor-pointer tracking-[0.02em] hover:bg-paper-2 hover:border-ink-2">
-              Upload Clip
-            </button>
+            <Button variant="primary" className="flex-1">Start</Button>
+            <Button variant="default" className="flex-1">Upload Clip</Button>
           </div>
         </div>
 
         {/* Panels */}
         <div className="flex flex-col gap-[26px]">
           {/* Detected Face */}
-          <Panel title="Detected Face" meta="1 subject">
-            <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 border border-rule rounded-[2px] bg-paper-2 flex items-center justify-center shrink-0">
-                <svg viewBox="0 0 24 24" className="w-[22px] h-[22px]">
-                  <circle cx="12" cy="9" r="4" fill="none" stroke="currentColor" className="text-ink-3" strokeWidth="1.25" />
-                  <ellipse cx="12" cy="21" rx="7" ry="5.5" fill="none" stroke="currentColor" className="text-ink-3" strokeWidth="1.25" />
-                </svg>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-[13px] text-ink-2 mb-1.5">Confidence</div>
-                <div className="flex items-center gap-3">
-                  <BarTrack width={78} variant="accent" />
-                  <span className="font-mono text-xs font-medium text-ink min-w-[36px] text-right">78%</span>
+          <Card>
+            <CardHeader>
+              <CardTitle>Detected Face</CardTitle>
+              <CardDescription>1 subject</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-3.5">
+                <div className="w-11 h-11 border border-rule rounded-[2px] bg-paper-2 flex items-center justify-center shrink-0">
+                  <svg viewBox="0 0 24 24" className="w-[22px] h-[22px]">
+                    <circle cx="12" cy="9" r="4" fill="none" stroke="currentColor" className="text-ink-3" strokeWidth="1.25" />
+                    <ellipse cx="12" cy="21" rx="7" ry="5.5" fill="none" stroke="currentColor" className="text-ink-3" strokeWidth="1.25" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] text-ink-2 mb-1.5">Confidence</div>
+                  <div className="flex items-center gap-3">
+                    <BarTrack width={78} variant="accent" />
+                    <span className="font-mono text-xs font-medium text-ink min-w-[36px] text-right">78%</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Panel>
+            </CardContent>
+          </Card>
 
           {/* Interpretation */}
-          <Panel title="Interpretation" meta="2s ago">
-            <p className="text-base leading-[1.75] font-light">
-              She crossed her arms and is giving shorter answers. This often signals{' '}
-              <span className="bg-accent-soft text-accent font-medium px-1.5 rounded-[2px]">disengagement</span>{' '}
-              or discomfort with the current topic. Consider shifting to an open-ended question.
-            </p>
-            <span className="inline-block font-mono text-[11px] font-medium py-1 px-2.5 rounded-[2px] mt-3.5 bg-accent-soft text-accent">
-              disengagement
-            </span>
-          </Panel>
+          <Card>
+            <CardHeader>
+              <CardTitle>Interpretation</CardTitle>
+              <CardDescription>2s ago</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-base leading-[1.75] font-light">
+                She crossed her arms and is giving shorter answers. This often signals{' '}
+                <Badge variant="accent">disengagement</Badge>{' '}
+                or discomfort with the current topic. Consider shifting to an open-ended question.
+              </p>
+              <Badge variant="accent" className="mt-3.5">disengagement</Badge>
+            </CardContent>
+          </Card>
 
           {/* Signals + Audio side by side */}
           <div className="grid grid-cols-2 gap-8 max-[560px]:grid-cols-1 max-[560px]:gap-[26px]">
-            <Panel title="Signals">
-              <div className="flex flex-col gap-3.5">
-                {[
-                  { label: 'Happiness', width: 35, variant: 'positive' },
-                  { label: 'Tension', width: 62, variant: 'alert' },
-                  { label: 'Interest', width: 28, variant: 'accent' },
-                ].map((s) => (
-                  <div key={s.label} className="grid grid-cols-[76px_1fr_40px] items-center gap-2.5">
-                    <span className="text-[13px] text-ink-2">{s.label}</span>
-                    <BarTrack width={s.width} variant={s.variant} />
-                    <span className="font-mono text-xs font-medium text-ink min-w-[36px] text-right">{s.width}%</span>
-                  </div>
-                ))}
-              </div>
-            </Panel>
+            <Card>
+              <CardHeader>
+                <CardTitle>Signals</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-3.5">
+                  {[
+                    { label: 'Happiness', width: 35, variant: 'positive' },
+                    { label: 'Tension', width: 62, variant: 'alert' },
+                    { label: 'Interest', width: 28, variant: 'accent' },
+                  ].map((s) => (
+                    <div key={s.label} className="grid grid-cols-[76px_1fr_40px] items-center gap-2.5">
+                      <span className="text-[13px] text-ink-2">{s.label}</span>
+                      <BarTrack width={s.width} variant={s.variant} />
+                      <span className="font-mono text-xs font-medium text-ink min-w-[36px] text-right">{s.width}%</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-            <Panel title="Audio">
-              <div className="flex flex-col gap-4">
-                <AudioMeter label="Tone variation" value="12%" bandLeft={15} bandWidth={55} markerLeft={12} status="below typical range (15–70%)" />
-                <AudioMeter label="Pace" value="96 wpm" bandLeft={20} bandWidth={47} markerLeft={16} status="slowing · typical 120–180 wpm" warn />
-                <AudioMeter label="Volume" value="58%" bandLeft={30} bandWidth={40} markerLeft={58} status="dropping · was 74% at start" warn />
-              </div>
-              <p className="font-mono text-[10px] text-ink-3 leading-normal mt-2.5 pt-2.5 border-t border-rule">
-                Typical range is a guide, not a goal. Being outside it isn't bad on its own — it's a cue to notice.
-              </p>
-            </Panel>
+            <Card>
+              <CardHeader>
+                <CardTitle>Audio</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-4">
+                  <AudioMeter label="Tone variation" value="12%" bandLeft={15} bandWidth={55} markerLeft={12} status="below typical range (15–70%)" />
+                  <AudioMeter label="Pace" value="96 wpm" bandLeft={20} bandWidth={47} markerLeft={16} status="slowing · typical 120–180 wpm" warn />
+                  <AudioMeter label="Volume" value="58%" bandLeft={30} bandWidth={40} markerLeft={58} status="dropping · was 74% at start" warn />
+                </div>
+                <p className="font-mono text-[10px] text-ink-3 leading-normal mt-2.5 pt-2.5 border-t border-rule">
+                  Typical range is a guide, not a goal. Being outside it isn't bad on its own — it's a cue to notice.
+                </p>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Live Timeline */}
-          <Panel title="Timeline" action={<button onClick={onGoToTimeline} className="font-sans text-xs font-medium text-accent bg-transparent border-none cursor-pointer p-0 hover:underline">View full timeline</button>}>
-            <div className="flex flex-col">
-              {[
-                { time: '0:18', desc: 'Vocal pace slowing, volume drop', chan: 'Audio', kind: 'Note', kindClass: 'bg-neutral-soft text-ink-3' },
-                { time: '0:12', desc: 'Disengagement signals detected', chan: 'Visual', kind: 'Alert', kindClass: 'bg-alert-soft text-alert' },
-                { time: '0:08', desc: 'Active listening, leaning in', chan: 'Visual', kind: 'Positive', kindClass: 'bg-positive-soft text-positive' },
-              ].map((ev, i, arr) => (
-                <div
-                  key={ev.time}
-                  className={`grid grid-cols-[46px_1fr_auto] gap-3 py-[11px] items-center ${i < arr.length - 1 ? 'border-b border-rule' : ''} ${i === 0 ? 'pt-0' : ''} ${i === arr.length - 1 ? 'pb-0' : ''}`}
-                >
-                  <span className="font-mono text-xs text-ink-3">{ev.time}</span>
-                  <span className="text-[13px] leading-normal">{ev.desc}</span>
-                  <span className="flex gap-1.5">
-                    <span className="font-mono text-[10px] font-medium py-[3px] px-2 rounded-[2px] border border-rule text-ink-3">{ev.chan}</span>
-                    <span className={`font-mono text-[10px] font-medium py-[3px] px-2 rounded-[2px] ${ev.kindClass}`}>{ev.kind}</span>
-                  </span>
-                </div>
-              ))}
-            </div>
-          </Panel>
+          <Card>
+            <CardHeader>
+              <CardTitle>Timeline</CardTitle>
+              <Button variant="link" size="sm" onClick={onGoToTimeline} className="text-xs p-0">View full timeline</Button>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col">
+                {[
+                  { time: '0:18', desc: 'Vocal pace slowing, volume drop', chan: 'Audio', kind: 'Note', kindVariant: 'default' as const },
+                  { time: '0:12', desc: 'Disengagement signals detected', chan: 'Visual', kind: 'Alert', kindVariant: 'alert' as const },
+                  { time: '0:08', desc: 'Active listening, leaning in', chan: 'Visual', kind: 'Positive', kindVariant: 'positive' as const },
+                ].map((ev, i, arr) => (
+                  <div
+                    key={ev.time}
+                    className={`grid grid-cols-[46px_1fr_auto] gap-3 py-[11px] items-center ${i < arr.length - 1 ? 'border-b border-rule' : ''} ${i === 0 ? 'pt-0' : ''} ${i === arr.length - 1 ? 'pb-0' : ''}`}
+                  >
+                    <span className="font-mono text-xs text-ink-3">{ev.time}</span>
+                    <span className="text-[13px] leading-normal">{ev.desc}</span>
+                    <span className="flex gap-1.5">
+                      <Badge size="sm" className="border border-rule">{ev.chan}</Badge>
+                      <Badge variant={ev.kindVariant} size="sm">{ev.kind}</Badge>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </section>
-  )
-}
-
-function Panel({
-  title,
-  meta,
-  action,
-  children,
-}: {
-  title: string
-  meta?: string
-  action?: React.ReactNode
-  children: React.ReactNode
-}) {
-  return (
-    <div className="bg-transparent border-t border-rule-strong">
-      <div className="flex items-baseline justify-between py-2.5 pb-3">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink">{title}</span>
-        {meta && <span className="font-mono text-[11px] text-ink-3">{meta}</span>}
-        {action}
-      </div>
-      <div className="pb-1">{children}</div>
-    </div>
   )
 }

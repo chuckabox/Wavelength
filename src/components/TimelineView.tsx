@@ -1,5 +1,8 @@
 import { useState, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { sessionEvents, isoDate, addDays, type SessionEvent } from '../data/sessions'
+import { Badge } from './ui/badge'
+import { Button } from './ui/button'
 
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const today = new Date()
@@ -7,10 +10,10 @@ const today = new Date()
 type KindFilter = 'all' | 'positive' | 'alert' | 'note'
 type ChannelFilter = 'all' | 'visual' | 'audio'
 
-const KIND_MAP: Record<string, { label: string; cls: string }> = {
-  positive: { label: 'Positive', cls: 'bg-positive-soft text-positive' },
-  alert: { label: 'Alert', cls: 'bg-alert-soft text-alert' },
-  note: { label: 'Note', cls: 'bg-neutral-soft text-ink-3' },
+const KIND_MAP: Record<string, { label: string; variant: 'positive' | 'alert' | 'default' }> = {
+  positive: { label: 'Positive', variant: 'positive' },
+  alert: { label: 'Alert', variant: 'alert' },
+  note: { label: 'Note', variant: 'default' },
 }
 
 export default function TimelineView() {
@@ -135,30 +138,33 @@ export default function TimelineView() {
             <div className="font-mono text-[11px] uppercase tracking-[0.06em]">No events match filters</div>
           </div>
         ) : (
-          <div className="flex flex-col">
-            {filteredEvents.map((ev, i) => {
-              const kindInfo = KIND_MAP[ev.kind]
-              return (
-                <div
-                  key={`${ev.time}-${i}`}
-                  className={`grid grid-cols-[46px_1fr_auto] gap-3 py-[13px] items-center ${
-                    i < filteredEvents.length - 1 ? 'border-b border-rule' : ''
-                  } ${i === 0 ? 'pt-0' : ''} ${i === filteredEvents.length - 1 ? 'pb-0' : ''}`}
-                >
-                  <span className="font-mono text-xs text-ink-3">{ev.time}</span>
-                  <span className="text-[13px] leading-normal">{ev.desc}</span>
-                  <span className="flex gap-1.5">
-                    <span className="font-mono text-[10px] font-medium py-[3px] px-2 rounded-[2px] border border-rule text-ink-3 capitalize">
-                      {ev.channel}
+          <AnimatePresence mode="popLayout">
+            <div className="flex flex-col">
+              {filteredEvents.map((ev, i) => {
+                const kindInfo = KIND_MAP[ev.kind]
+                return (
+                  <motion.div
+                    key={`${ev.time}-${ev.desc}`}
+                    layout
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.2, delay: i * 0.02 }}
+                    className={`grid grid-cols-[46px_1fr_auto] gap-3 py-[13px] items-center ${
+                      i < filteredEvents.length - 1 ? 'border-b border-rule' : ''
+                    } ${i === 0 ? 'pt-0' : ''} ${i === filteredEvents.length - 1 ? 'pb-0' : ''}`}
+                  >
+                    <span className="font-mono text-xs text-ink-3">{ev.time}</span>
+                    <span className="text-[13px] leading-normal">{ev.desc}</span>
+                    <span className="flex gap-1.5">
+                      <Badge size="sm" className="border border-rule capitalize">{ev.channel}</Badge>
+                      <Badge variant={kindInfo.variant} size="sm">{kindInfo.label}</Badge>
                     </span>
-                    <span className={`font-mono text-[10px] font-medium py-[3px] px-2 rounded-[2px] ${kindInfo.cls}`}>
-                      {kindInfo.label}
-                    </span>
-                  </span>
-                </div>
-              )
-            })}
-          </div>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </AnimatePresence>
         )}
       </div>
     </section>
@@ -175,17 +181,14 @@ function FilterGroup({ label, options, active, onChange }: {
     <div className="flex items-center gap-2 flex-wrap" role="group" aria-label={`Filter by ${label.toLowerCase()}`}>
       <span className="text-[11px] font-semibold uppercase tracking-[0.09em] text-ink-3 mr-0.5">{label}</span>
       {options.map(opt => (
-        <button
+        <Button
           key={opt.key}
+          variant={active === opt.key ? 'primary' : 'default'}
+          size="sm"
           onClick={() => onChange(opt.key)}
-          className={`font-sans text-xs font-medium py-[5px] px-3.5 rounded-[2px] cursor-pointer border ${
-            active === opt.key
-              ? 'bg-ink border-ink text-paper'
-              : 'bg-transparent border-rule text-ink-2 hover:border-ink-3 hover:text-ink'
-          } focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2`}
         >
           {opt.label}
-        </button>
+        </Button>
       ))}
     </div>
   )
