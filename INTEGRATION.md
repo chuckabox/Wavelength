@@ -54,7 +54,24 @@ body: { conversation_id, user_speaker, turns:[{speaker,t,text}], visual_signals:
 ```
 `debrief/viewer.html` is a working reference renderer for exactly this response.
 
-## The two decisions still open (Connor's call, not ours to assume)
+## The LIVE -> DEBRIEF bridge is written for you
+`debrief/frames_to_signals.js` (pure fn, importable in React/TS): pass your ~1 Hz MediaPipe
+engagement frames, get back the `visual_signals` array the debrief consumes. Call it at End
+Session and hand the result to `/api/debrief`. Verified against a synthetic drift-and-recover
+stream. This is the only glue between your LIVE half and our DEBRIEF half.
+
+## Demo + Q&A source of truth
+Your `BUILD_PLAN.md` §6 (skit + staging trick) is the canonical demo script - it's good, keep it.
+Our `pitch-script.md` Q&A prep and `demo-runsheet.md` fallback ladder supplement it (emotion-
+validity, consent, why-not-real-time, cost-per-debrief answers). Don't write a third version.
+
+## The two decisions (RESOLVED by Connor)
+- **Real-time LIVE nudges: YES** - converge on the 3-state plan. Build the live loop.
+- **Stack: React calls the deployed Python API** (`/api/nudge` + `/api/debrief`) - no Express proxy.
+- **Name: Wavelength.** **Window: ~8 hours left** - protect the clock; our deployed backend is
+  the reliable core and the fallback if the live loop slips.
+
+## Original open decisions (now settled, kept for context)
 1. **Real-time LIVE nudges (your States 1-2).** Connor previously cut real-time for attention-split
    reasons; your staging trick (partner can't see the screen) is a strong answer to that, so it's
    reasonable to re-add. **Waiting on Connor to confirm before anyone builds the live loop.**
