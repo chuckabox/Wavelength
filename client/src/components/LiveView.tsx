@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import type { SignalFrame } from 'shared';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
@@ -303,10 +303,10 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
   const recentNudges = [...nudges].reverse().slice(0, 5);
 
   return (
-    <section className="pb-24 relative" ref={containerRef}>
+    <section className="pb-24 relative">
       <AnimatePresence>
-        {toastId && latest?.nudge && (
-          <NudgeToast key={toastId} nudge={latest.nudge} onDismiss={() => setToastId(null)} />
+        {activeToast && (
+          <NudgeToast key={activeToast.id} nudge={activeToast} onDismiss={() => setToastId(null)} />
         )}
       </AnimatePresence>
 
@@ -319,6 +319,11 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
           <p className="font-mono text-xs text-ink-3">
             {sourceLabel} · real-time analysis · strict local processing
           </p>
+          {mpError && (
+            <p className="text-xs text-alert mt-1" role="alert">
+              MediaPipe: {mpError} — using synthetic signals
+            </p>
+          )}
         </div>
         
         <div className="flex gap-2">
@@ -554,7 +559,6 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
         </div>
       </div>
 
-      <NudgeToast nudge={activeToast} onDismiss={() => setToastId(null)} />
     </section>
   );
 }
