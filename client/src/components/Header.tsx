@@ -1,4 +1,4 @@
-type View = 'live' | 'stats' | 'timeline'
+type View = 'home' | 'live' | 'stats' | 'timeline'
 
 interface HeaderProps {
   currentView: View
@@ -15,9 +15,12 @@ export default function Header({ currentView, onViewChange }: HeaderProps) {
   return (
     <>
       <header className="flex items-baseline justify-between gap-4 pt-[26px]">
-        <div className="text-[21px] font-medium tracking-tight text-ink after:content-['.'] after:text-accent after:font-semibold">
+        <button 
+          onClick={() => onViewChange('home')}
+          className="text-[21px] font-medium tracking-tight text-ink after:content-['.'] after:text-accent after:font-semibold bg-transparent border-none p-0 cursor-pointer hover:opacity-80 transition-opacity"
+        >
           wavelength
-        </div>
+        </button>
         <nav className="flex gap-[26px]" aria-label="Main">
           {VIEWS.map(({ key, label }) => (
             <button

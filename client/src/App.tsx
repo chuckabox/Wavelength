@@ -4,8 +4,9 @@ import Header from './components/Header'
 import LiveView from './components/LiveView'
 import StatsView from './components/StatsView'
 import TimelineView from './components/TimelineView'
+import LandingPage from './components/LandingPage'
 
-type View = 'live' | 'stats' | 'timeline'
+type View = 'home' | 'live' | 'stats' | 'timeline'
 
 const pageVariants = {
   initial: { opacity: 0, y: 6 },
@@ -16,7 +17,7 @@ const pageVariants = {
 export default function App() {
   const [view, setView] = useState<View>(() => {
     const hash = window.location.hash.slice(1)
-    return ['live', 'stats', 'timeline'].includes(hash) ? (hash as View) : 'live'
+    return ['home', 'live', 'stats', 'timeline'].includes(hash) ? (hash as View) : 'home'
   })
 
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function App() {
           exit="exit"
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
+          {view === 'home' && <LandingPage onEnterApp={() => setView('live')} />}
           {view === 'live' && <LiveView onGoToTimeline={() => setView('timeline')} />}
           {view === 'stats' && <StatsView />}
           {view === 'timeline' && <TimelineView />}

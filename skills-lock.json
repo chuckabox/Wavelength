@@ -12,6 +12,12 @@
       "sourceType": "github",
       "skillPath": "SKILL.md",
       "computedHash": "3ad3daf3e2cf2b11cf47677d6678917c8e83d78c5f988c4c9826eb3c913a43df"
+    },
+    "refactoring-ui": {
+      "source": "wondelai/skills",
+      "sourceType": "github",
+      "skillPath": "refactoring-ui/SKILL.md",
+      "computedHash": "ae02c7c2b3685df24ca66836dff7a01efac1ed213b9d6963273c354cd9fe57b1"
     }
   }
 }
