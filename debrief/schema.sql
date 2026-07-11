@@ -36,6 +36,21 @@ CREATE TABLE IF NOT EXISTS moments (
     embedding    vector(1536)
 );
 
+-- One row per ~1 Hz signal frame from the LIVE loop (Best Use of Data backbone).
+-- Written by frames.py via POST /api/frames; the DEBRIEF timeline replays from these.
+CREATE TABLE IF NOT EXISTS frames (
+    id              BIGSERIAL PRIMARY KEY,
+    conversation_id TEXT NOT NULL,
+    recorded_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+    t               DOUBLE PRECISION NOT NULL,   -- seconds from session start
+    engagement      DOUBLE PRECISION,
+    valence         DOUBLE PRECISION,
+    attention       DOUBLE PRECISION,
+    signals         JSONB,                       -- raw derived signal snapshot
+    confidence      TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_frames_conv ON frames(conversation_id, t);
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_moments_session ON moments(session_id);
 -- ANN index for semantic recall (cosine). Build after some rows exist.

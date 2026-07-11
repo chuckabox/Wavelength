@@ -51,6 +51,7 @@ def add_cors(resp):
 
 @app.route("/api/debrief", methods=["OPTIONS"])
 @app.route("/api/nudge", methods=["OPTIONS"])
+@app.route("/api/frames", methods=["OPTIONS"])
 def cors_preflight():
     return ("", 204)
 
@@ -122,6 +123,29 @@ def nudge():
         return jsonify(generate_nudge(payload))
     except (RuntimeError, ValueError) as exc:
         return jsonify({"error": str(exc)}), 502
+
+
+@app.post("/api/frames")
+def frames():
+    """Persist a batch of 1 Hz signal frames from the LIVE loop into Postgres.
+
+    Body: {conversation_id, frames: [{t, engagement, valence, attention, signals, confidence}]}.
+    Called every ~5s during LIVE. Best Use of Data backbone. Never blocks the
+    live loop: on any store failure it degrades to accepting-without-persisting.
+    """
+    payload = request.get_json(silent=True) or {}
+    conv = payload.get("conversation_id")
+    batch = payload.get("frames")
+    if not conv or not isinstance(batch, list):
+        return jsonify({"error": "body needs 'conversation_id' and a 'frames' list"}), 400
+    try:
+        from frames import FramesStore
+
+        store = FramesStore()
+        stored = store.add(conv, batch)
+        return jsonify({"stored": stored, "total_for_session": store.count(conv)})
+    except Exception as exc:  # never break the live loop over persistence
+        return jsonify({"stored": 0, "persisted": False, "note": str(exc)}), 200
 
 
 @app.get("/api/progress")
