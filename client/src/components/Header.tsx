@@ -56,21 +56,6 @@ export default function Header({ phase, onBrandClick, onEndSession, onKill, onPh
           )}
 
           <div className="flex items-center gap-3">
-            {phase === 'live' && (
-              <>
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="!border-alert !text-alert hover:!bg-alert-soft"
-                  onClick={onKill}
-                >
-                  Kill switch
-                </Button>
-                <Button variant="primary" size="sm" onClick={onEndSession}>
-                  End session
-                </Button>
-              </>
-            )}
             {phase === 'debrief' && (
               <span className="font-mono text-[11px] tracking-[0.06em] uppercase text-ink-3">
                 Debrief

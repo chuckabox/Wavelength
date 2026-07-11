@@ -11,6 +11,8 @@ const today = new Date()
 type KindFilter = 'all' | 'positive' | 'alert' | 'note'
 type ChannelFilter = 'all' | 'visual' | 'audio'
 
+import { useSession } from '@/session/SessionContext'
+
 const KIND_MAP: Record<string, { label: string; variant: 'positive' | 'alert' | 'default' }> = {
   positive: { label: 'Highlight', variant: 'positive' },
   alert: { label: 'Friction', variant: 'alert' },
@@ -18,12 +20,31 @@ const KIND_MAP: Record<string, { label: string; variant: 'positive' | 'alert' | 
 }
 
 export default function TimelineView() {
+  const { sessionId } = useSession()
   const [selectedDate, setSelectedDate] = useState(isoDate(today))
   const [stripEndDate, setStripEndDate] = useState(isoDate(today))
   const [kindFilter, setKindFilter] = useState<KindFilter>('all')
   const [channelFilter, setChannelFilter] = useState<ChannelFilter>('all')
 
   const session = sessionEvents[selectedDate]
+
+  if (!sessionId) {
+    return (
+      <section className="pb-24">
+        <div className="mb-10">
+          <h2 className="font-sans text-[28px] md:text-[32px] tracking-tight font-medium text-ink mb-2">
+            Session timeline
+          </h2>
+          <p className="font-mono text-xs text-ink-3">no session recorded</p>
+        </div>
+        <div className="flex items-center justify-center h-[40vh] border border-dashed border-rule rounded-xl bg-paper-50">
+          <p className="text-ink-3 font-mono text-sm tracking-widest uppercase">
+            No data until we actually start stuff
+          </p>
+        </div>
+      </section>
+    )
+  }
 
   const filteredEvents = useMemo(() => {
     if (!session) return []

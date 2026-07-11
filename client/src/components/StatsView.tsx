@@ -6,6 +6,7 @@ import {
 import { motion } from 'framer-motion'
 import { statsData, type StatsChannel } from '../data/sessions'
 import { Button } from './ui/button'
+import { useSession } from '@/session/SessionContext'
 
 const CHANNELS: { key: StatsChannel; label: string }[] = [
   { key: 'all', label: 'All signals' },
@@ -17,11 +18,30 @@ const POSITIVE_EMOTIONS = ['warmth', 'trust', 'interest', 'ease'] as const
 const WATCH_EMOTIONS = ['tension', 'confusion'] as const
 
 export default function StatsView() {
+  const { sessionId } = useSession()
   const [channel, setChannel] = useState<StatsChannel>('all')
   const data = statsData[channel]
 
   const chartData = data.trend.map((value, i) => ({ session: i + 1, score: value }))
   const last = chartData[chartData.length - 1]
+
+  if (!sessionId) {
+    return (
+      <section className="pb-24">
+        <div className="mb-10">
+          <h2 className="font-sans text-[28px] md:text-[32px] tracking-tight font-medium text-ink mb-2">
+            How people experience you
+          </h2>
+          <p className="font-mono text-xs text-ink-3">across 12 practice sessions · last 30 days</p>
+        </div>
+        <div className="flex items-center justify-center h-[40vh] border border-dashed border-rule rounded-xl bg-paper-50">
+          <p className="text-ink-3 font-mono text-sm tracking-widest uppercase">
+            No data until we actually start stuff
+          </p>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="pb-24">

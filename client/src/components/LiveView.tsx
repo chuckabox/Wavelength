@@ -303,22 +303,59 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
   const recentNudges = [...nudges].reverse().slice(0, 5);
 
   return (
-    <section>
-      <div className="mb-[26px] flex flex-wrap items-end justify-between gap-3">
+    <section className="pb-24 relative" ref={containerRef}>
+      <AnimatePresence>
+        {toastId && latest?.nudge && (
+          <NudgeToast key={toastId} nudge={latest.nudge} onDismiss={() => setToastId(null)} />
+        )}
+      </AnimatePresence>
+
+      {/* Header */}
+      <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="text-[26px] font-light tracking-tight leading-[1.25]">Live session</h2>
-          <p className="font-mono text-xs text-ink-3 mt-1">
-            {sourceLabel} · B = dip · N = masked arousal (synthetic) · video stays on device
+          <h2 className="font-sans text-[28px] md:text-[32px] tracking-tight font-medium text-ink mb-2">
+            Live Camera
+          </h2>
+          <p className="font-mono text-xs text-ink-3">
+            {sourceLabel} · real-time analysis · strict local processing
           </p>
-          {mpError && (
-            <p className="text-xs text-alert mt-1" role="alert">
-              MediaPipe: {mpError} — using synthetic signals
-            </p>
+        </div>
+        
+        <div className="flex gap-2">
+          {videoSource === 'none' && (
+            <>
+              <Button variant="primary" className="rounded-full px-6" onClick={() => void handleStartCamera()}>
+                Start Live Camera
+              </Button>
+              <Button variant="default" className="rounded-full px-6" onClick={() => fileInputRef.current?.click()}>
+                Upload Clip
+              </Button>
+            </>
+          )}
+          {videoSource === 'camera' && (
+            <>
+              <Button
+                variant="default"
+                className="rounded-full text-alert border-alert/20 hover:bg-alert/10"
+                onClick={handleStopCamera}
+              >
+                Stop Camera
+              </Button>
+              <Button
+                variant={meshOn ? 'primary' : 'default'}
+                className="rounded-full"
+                onClick={() => setMeshOn((v) => !v)}
+              >
+                Mesh {meshOn ? 'on' : 'off'}
+              </Button>
+            </>
+          )}
+          {videoSource === 'clip' && (
+            <Button variant="default" className="rounded-full" onClick={handleClearClip}>
+              Clear Clip
+            </Button>
           )}
         </div>
-        <Badge variant="accent" size="sm">
-          {sessionId ? `session ${sessionId.slice(0, 8)}…` : 'no session'}
-        </Badge>
       </div>
 
       <div className="grid grid-cols-[1fr_380px] gap-10 items-start max-[900px]:grid-cols-1">
@@ -355,42 +392,6 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
             onChange={handleFileChange}
             className="hidden"
           />
-
-          <div className="flex gap-2.5">
-            {videoSource === 'none' && (
-              <>
-                <Button variant="primary" className="flex-1" onClick={() => void handleStartCamera()}>
-                  Start Live Camera
-                </Button>
-                <Button variant="default" className="flex-1" onClick={() => fileInputRef.current?.click()}>
-                  Upload Clip
-                </Button>
-              </>
-            )}
-            {videoSource === 'camera' && (
-              <>
-                <Button
-                  variant="default"
-                  className="flex-1 text-alert border-alert/20 hover:bg-alert/10"
-                  onClick={handleStopCamera}
-                >
-                  Stop Camera
-                </Button>
-                <Button
-                  variant={meshOn ? 'primary' : 'default'}
-                  className="flex-1"
-                  onClick={() => setMeshOn((v) => !v)}
-                >
-                  Mesh {meshOn ? 'on' : 'off'}
-                </Button>
-              </>
-            )}
-            {videoSource === 'clip' && (
-              <Button variant="default" className="flex-1" onClick={handleClearClip}>
-                Clear Clip
-              </Button>
-            )}
-          </div>
         </div>
 
         <div className="flex flex-col gap-[26px]">
