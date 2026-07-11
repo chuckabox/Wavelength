@@ -35,6 +35,8 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  html { scrollbar-gutter: stable; }
+
   body {
     background: var(--bg);
     color: var(--text);
@@ -63,33 +65,21 @@
   }
 
   .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 600;
-    letter-spacing: -0.3px;
+    letter-spacing: -0.6px;
     color: var(--text);
   }
 
-  .logo-mark {
-    width: 32px;
-    height: 32px;
-    background: var(--accent);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+  .logo::after {
+    content: ".";
+    color: var(--accent);
   }
-
-  .logo-mark svg { width: 18px; height: 18px; }
 
   nav {
     display: flex;
     gap: 4px;
-    margin-right: auto;
-    margin-left: 16px;
+    margin-left: auto;
   }
 
   .nav-btn {
@@ -528,24 +518,20 @@
 
 <div class="app">
   <header>
-    <div class="logo">
-      <div class="logo-mark">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2 12c2.5 0 2.5-6 5-6s2.5 12 5 12 2.5-12 5-12 2.5 6 5 6" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/>
-        </svg>
-      </div>
-      Wavelength
-    </div>
+    <div class="logo">wavelength</div>
     <nav aria-label="Main">
       <button class="nav-btn active" data-view="live">Live</button>
       <button class="nav-btn" data-view="stats">Stats</button>
       <button class="nav-btn" data-view="timeline">Timeline</button>
     </nav>
-    <button class="btn">Settings</button>
   </header>
 
   <!-- ══════════ LIVE ══════════ -->
   <section class="view active" id="view-live">
+    <div class="view-header">
+      <h2 class="view-title">Live session</h2>
+      <p class="view-sub">Real-time cue reading · camera and audio stay on this device</p>
+    </div>
     <div class="main-grid">
       <div class="camera-area">
         <div class="camera-feed">
