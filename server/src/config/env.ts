@@ -1,5 +1,12 @@
-import 'dotenv/config';
+import { config as dotenvConfig } from 'dotenv';
 import { z } from 'zod';
+
+// Load server/.env for local + deployed runs; tests run hermetically off explicit env.
+if (process.env.NODE_ENV !== 'test') dotenvConfig();
+
+/** Treat empty/whitespace values as "unset" so optional vars don't fail validation. */
+const emptyToUndefined = (v: unknown): unknown =>
+  typeof v === 'string' && v.trim() === '' ? undefined : v;
 
 /**
  * Environment contract. Validated once at startup — the server fails fast on
@@ -14,17 +21,26 @@ const EnvSchema = z.object({
 
   // DigitalOcean Gradient inference. Optional so the server can boot for /health,
   // but any inference call fails loudly if it is missing.
-  DIGITAL_OCEAN_MODEL_ACCESS_KEY: z.string().min(1).optional(),
+  DIGITAL_OCEAN_MODEL_ACCESS_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   DO_INFERENCE_BASE_URL: z.string().url().default('https://inference.do-ai.run/v1'),
   // Model names verified working on DO 2026-07-11; the Phase 0 spike re-confirms.
   MODEL_FAST: z.string().default('anthropic-claude-haiku-4.5'),
   MODEL_SMART: z.string().default('anthropic-claude-4.6-sonnet'),
 
   // Managed Postgres — optional until Phase 1.
-  DATABASE_URL: z.string().url().optional(),
+  DATABASE_URL: z.preprocess(
+    emptyToUndefined,
+    z
+      .string()
+      .url(
+        'DATABASE_URL must be a full connection string like ' +
+          'postgresql://user:pass@host:25060/db?sslmode=require, or left blank',
+      )
+      .optional(),
+  ),
 
   // Comma-separated list of allowed browser origins.
-  CORS_ORIGIN: z.string().default('http://localhost:5173'),
+  CORS_ORIGIN: z.preprocess(emptyToUndefined, z.string().default('http://localhost:5173')),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
