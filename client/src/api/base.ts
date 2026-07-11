@@ -12,8 +12,13 @@ export class ApiError extends Error {
   }
 }
 
-/** Empty string = same origin (Vite proxy in dev, Express in prod). */
-export const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined) ?? '';
+/**
+ * Override with VITE_API_BASE. In Vite dev, default to the live App Platform URL
+ * (CORS allows localhost:5173). Empty string in production = same-origin Express.
+ */
+export const API_BASE =
+  (import.meta.env.VITE_API_BASE as string | undefined) ??
+  (import.meta.env.DEV ? 'https://wavelength-wxut4.ondigitalocean.app' : '');
 
 export async function jsonFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
