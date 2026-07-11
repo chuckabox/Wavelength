@@ -27,7 +27,7 @@ const MODAL_CONTENT = {
 };
 
 function AppShell() {
-  const { phase, setPhase, endAndDebrief, kill } = useSession();
+  const { phase, setPhase, endAndDebrief, kill, startSession } = useSession();
   const [modal, setModal] = useState<'privacy' | 'terms' | null>(null);
 
   return (
@@ -52,7 +52,7 @@ function AppShell() {
           exit="exit"
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
-          {phase === 'home' && <LandingPage onEnterApp={() => setPhase('consent')} />}
+          {phase === 'home' && <LandingPage onEnterApp={() => void startSession()} />}
           {phase === 'consent' && <ConsentView />}
           {phase === 'live' && (
             <LiveView onGoToTimeline={() => void endAndDebrief()} />

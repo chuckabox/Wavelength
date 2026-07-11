@@ -37,7 +37,7 @@ export default function Header({ phase, onBrandClick, onEndSession, onKill, onPh
                     : 'text-ink-2 font-normal hover:text-ink'
                 } focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2`}
               >
-                Session
+                Live
               </button>
               {VIEWS.map(({ key, label }) => (
                 <button
