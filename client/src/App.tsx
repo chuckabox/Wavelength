@@ -33,6 +33,7 @@ function AppShell() {
         }}
         onEndSession={() => void endAndDebrief()}
         onKill={kill}
+        onPhaseChange={setPhase}
       />
 
       {phase === 'home' && (
