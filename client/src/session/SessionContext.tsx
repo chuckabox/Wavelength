@@ -10,7 +10,7 @@ import {
 import type { NudgeResponse, SignalFrame, TranscriptTurn } from 'shared';
 import * as sessionsApi from '@/api/sessions';
 
-export type AppPhase = 'home' | 'live' | 'debrief';
+export type AppPhase = 'home' | 'consent' | 'live' | 'debrief' | 'timeline' | 'stats';
 
 export type NudgeEvent = NudgeResponse & { t: number; id: string };
 
@@ -106,7 +106,6 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Could not start session';
       setStartError(message);
-      throw err;
     } finally {
       setStarting(false);
     }

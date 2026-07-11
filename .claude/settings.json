@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npx vite *)",
+      "Bash(npx tsc *)",
+      "Bash(git *)"
+    ]
+  },
+  "mcpServers": {
+    "digitalocean": {
+      "command": "npx",
+      "args": ["-y", "@digitalocean/mcp@latest"],
+      "env": {
+        "DIGITALOCEAN_API_TOKEN": "${DIGITALOCEAN_API_TOKEN}"
+      }
+    }
+  }
+}
