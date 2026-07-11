@@ -41,100 +41,76 @@ that's the point. Show *capability* ("the machine reads and reasons"), never cla
 - **[docs/vision.md](./docs/vision.md)** — the public product vision (neurodivergent framing).
 - **[docs/north-star.md](./docs/north-star.md)** — the real vision: machine perception of people.
 - **[docs/hackathon-goals.md](./docs/hackathon-goals.md)** — judging criteria & target prizes.
+- **[docs/backend-plan.md](./docs/backend-plan.md)** — the production backend build plan (phases, stack).
 - **[docs/digitalocean.md](./docs/digitalocean.md)** — DigitalOcean capabilities cheat-sheet.
 - **`.agents/skills/digitalocean-ai/`** — installed DO Inference skill (deep reference).
 
 ## Architecture
 
-One repo, **one deployable**: a Node/Express service that serves the built React
-client *and* proxies all DigitalOcean calls (so the inference key never reaches the
-browser). Perception runs **client-side** (MediaPipe); the LLM and the database live
-behind the server.
+Production build, good fundamentals. One monorepo, **one deployable**: a Node/Express
+(TypeScript) service that serves the React client *and* owns all DigitalOcean access —
+the inference key never reaches the browser. Perception runs **client-side** (MediaPipe);
+the LLM and Postgres live behind the server. Full phased plan (stack, gates, spike):
+**[docs/backend-plan.md](./docs/backend-plan.md)**.
+
+> The old `debrief/` Python backend was a throwaway test and has been removed. We build
+> the real backend from first principles — do not reference its contract.
 
 ```
-┌── Browser (raw video/audio never leaves) ──────────────────────────┐
+┌── Browser · React + MediaPipe (raw video/audio never leaves) ───────┐
 │  getUserMedia → MediaPipe (~12Hz) → derived signals → 1Hz frames     │
-│      → in-memory store (live charts)                                 │
-│  deterministic event engine ──candidate──┐                           │
-│  Web Speech API → transcript             │                           │
-└──────────────── fetch / SSE ─────────────┼───────────────────────────┘
+│  deterministic event engine ──candidate──┐   Web Speech → transcript │
+└──────────────── HTTPS / SSE ─────────────┼───────────────────────────┘
                                            ▼
-┌── DO App Platform · Express · :8080 ──────────────────────────────────┐
-│  POST /api/frames  → batch insert (~every 5s)      → DO Postgres       │
-│  POST /api/nudge   → DO Gradient fast model, forced tool-call          │
-│  POST /api/debrief → DO Gradient Claude, SSE stream (temporal read)    │
-│  GET  /api/sessions[/:id] → history                → DO Postgres       │
-│  serves client/dist · holds DO key · canned fallbacks                  │
-└────────────────────────────────────────────────────────────────────────┘
+┌── DO App Platform · Express (TS) · :8080 ─────────────────────────────┐
+│  routes (zod) → services → repositories (Drizzle) → clients (Gradient)│
+│  serves client build · holds DO key · CORS locked · canned fallbacks  │
+└──────────┬──────────────────────────────────┬────────────────────────┘
+           ▼                                   ▼
+   DO Gradient AI Inference           DO Managed Postgres (Drizzle)
 ```
 
-**Contract:** `client` and `server` never share code except types in `shared/`
-(the `SignalFrame`, nudge, debrief, and session shapes). That boundary is what keeps
-the perception engine free to grow toward the north-star without touching the server.
+**Layering (each layer knows only the one below):** HTTP routes validate with Zod →
+services hold domain logic + deterministic metrics → repositories are the only place SQL
+lives (Drizzle) → clients wrap DO Gradient (chat / SSE stream / forced tool-call).
+`shared/` holds the Zod schemas + inferred types = the wire contract client and server
+agree on.
 
-**Priorities:** P0 = camera → MediaPipe → live engagement chart → nudge → debrief on a
-deployed URL. Cuttable under time pressure, in this order: audio/talk-time → sessions
-history → pgvector. Never cut the debrief timeline.
-
-## File structure
+## File structure (target)
 
 ```
 wavelength/
-├── package.json              # npm workspaces: ["client","server","shared"]
-├── .do/app.yaml              # App Platform spec (build client, run server, :8080, envs)
-├── .env.example              # DO_MODEL_ACCESS_KEY, DATABASE_URL, MODEL_NUDGE, MODEL_DEBRIEF
+├── package.json              # npm workspaces: ["server","shared"] (client at root for now)
 ├── AGENTS.md · README.md · BUILD_PLAN.md · docs/
 │
-├── shared/src/               # the client↔server type contract (no logic)
-│   ├── signals.ts            #   SignalFrame, EngagementFrame, Confidence tier
-│   ├── nudge.ts              #   NudgeRequest, NudgeResponse (tool-call schema)
-│   ├── debrief.ts            #   DebriefRequest, DebriefEvent (SSE chunk), TimelineAnnotation
-│   └── session.ts            #   Session, SessionSummary
+├── src/                      # React app (Vite) — stays at root; client-side perception
+│   ├── App.tsx               #   3-state machine: CONSENT → LIVE → DEBRIEF
+│   ├── perception/           #   ★ MediaPipe → signals → event engine (north-star grows here)
+│   ├── api/                  #   typed fetch/SSE calls to the server's /v1 endpoints
+│   └── components/ · states/ · lib/
 │
-├── client/                   # Vite + React 19 + Tailwind v4 (existing app moves here)
-│   ├── index.html · vite.config.ts · tsconfig*.json
-│   └── src/
-│       ├── main.tsx · App.tsx        # App = 3-state machine: CONSENT → LIVE → DEBRIEF
-│       ├── states/                   # one screen per state
-│       │   ├── Consent.tsx · Live.tsx · Debrief.tsx
-│       ├── perception/       # ★ the local engine — the north-star grows here
-│       │   ├── faceLandmarker.ts     #   MediaPipe init, VIDEO mode ~12Hz
-│       │   ├── signals.ts            #   blendshapes → descriptors (smile, gaze, lean, tension)
-│       │   ├── baseline.ts           #   per-person first-90s baseline + EMA smoothing
-│       │   ├── engagement.ts         #   weighted blend → 1Hz EngagementFrame + confidence
-│       │   ├── eventEngine.ts        #   z-score + hysteresis + cooldown → candidate nudge
-│       │   └── index.ts              #   PerceptionEngine: camera → frame stream
-│       ├── audio/            # (cuttable) speech.ts (transcript) · talkTime.ts (who's talking)
-│       ├── store/sessionStore.ts     # in-memory frame array + session state
-│       ├── api/client.ts             # postFrames · requestNudge · streamDebrief (SSE)
-│       ├── components/
-│       │   ├── FaceMirror.tsx        #   webcam + mesh overlay ("what the AI sees")
-│       │   ├── NudgeToast.tsx · ConfidenceBadge.tsx
-│       │   ├── dashboard/            #   EngagementChart · Sparkline · TalkTimeBar
-│       │   ├── TimelineChart.tsx     #   debrief hero chart
-│       │   ├── Header.tsx
-│       │   └── ui/                   #   shadcn primitives
-│       ├── data/sessions.ts          # seeded fake past sessions (demo)
-│       └── lib/utils.ts
+├── shared/src/               # the wire contract — Zod schemas + inferred types (no logic)
+│   ├── contracts/            #   frames.ts · nudge.ts · debrief.ts · session.ts (req+res schemas)
+│   └── domain/               #   SignalFrame, Confidence, shared domain types
 │
-└── server/                   # Node 20 + Express + pg
-    ├── package.json · tsconfig.json
+└── server/                   # Node 20 + Express 5 + Drizzle (TypeScript, strict)
+    ├── package.json · tsconfig.json · Dockerfile · drizzle.config.ts
     └── src/
-        ├── index.ts                  # Express: serve client/dist + mount /api, :8080
-        ├── env.ts                    # load + validate env
-        ├── gradient.ts               # DO Inference client + model constants
+        ├── index.ts          #   bootstrap: config → logger → app → listen :8080
+        ├── app.ts            #   express app: middleware, routes, error handler
+        ├── config/env.ts     #   Zod-validated env (fail fast)
+        ├── logger.ts         #   Pino
+        ├── http/
+        │   ├── middleware/   #   requestId · errorHandler · cors (locked) · rateLimit
+        │   └── routes/       #   health · frames · nudge · debrief · sessions  (/v1)
+        ├── services/         #   domain logic: metrics (in code) · nudge · debrief · progress
+        ├── repositories/     #   Drizzle queries — the ONLY place SQL lives
         ├── db/
-        │   ├── pool.ts · schema.sql  #   sessions + frames tables (pgvector = stretch)
-        │   └── sessions.ts           #   insertFrames · createSession · get · list
-        ├── routes/
-        │   ├── nudge.ts · debrief.ts · frames.ts · sessions.ts
-        ├── llm/
-        │   ├── nudgePrompt.ts        #   hedging lexicon + ban-list + confidence tier
-        │   └── debriefPrompt.ts      #   temporal reasoning over the trajectory
-        └── fallbacks.ts              # canned nudges + cached debrief on failure
+        │   ├── schema.ts · client.ts · migrations/
+        ├── clients/gradient.ts   # DO Inference: chat · stream · structured(tool-call+repair)
+        └── errors.ts         #   typed error classes + response envelope
 ```
 
-**Migration from today's flat root:** the existing Vite app (`src/`, `index.html`,
-`vite.config.ts`, `package.json`) moves under `client/`; add `server/` and `shared/`
-and a root workspace `package.json`. Do it in one coordinated commit — teammates are
-building on `main` right now.
+**Priorities / cut order** (see plan): P0 = camera → live engagement chart → nudge →
+debrief on a deployed URL. Cut under pressure in this order: pgvector → progress/history
+→ frame persistence. Never cut the debrief or the live nudge endpoint.
