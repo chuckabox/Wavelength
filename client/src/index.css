@@ -38,8 +38,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-variant-numeric: tabular-nums;
   margin: 0;
+  overflow-x: hidden;
 }
 
 @keyframes wave-draw {
   to { stroke-dashoffset: 0; }
+}
+
+.bg-dots {
+  background-image: radial-gradient(var(--color-rule) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.mask-fade-out {
+  mask-image: radial-gradient(circle at top center, black 30%, transparent 80%);
 }

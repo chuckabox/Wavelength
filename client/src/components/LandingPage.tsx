@@ -3,9 +3,11 @@ import { Button } from './ui/button'
 
 interface LandingPageProps {
   onEnterApp: () => void
+  starting?: boolean
+  startError?: string | null
 }
 
-export default function LandingPage({ onEnterApp }: LandingPageProps) {
+export default function LandingPage({ onEnterApp, starting = false, startError = null }: LandingPageProps) {
   const reduce = useReducedMotion()
 
   return (
@@ -23,11 +25,22 @@ export default function LandingPage({ onEnterApp }: LandingPageProps) {
             Understand the room.
           </h1>
           <p className="font-sans text-[18px] text-ink-2 leading-relaxed max-w-[45ch] mb-10">
-            A consented social co-pilot that helps you read social cues during one-on-one conversations.
+            A social co-pilot that helps you read cues during one-on-one conversations.
           </p>
-          <Button variant="primary" size="lg" className="rounded-full px-8 font-medium" onClick={onEnterApp}>
-            Start Session
+          <Button
+            variant="primary"
+            size="lg"
+            className="rounded-full px-8 font-medium"
+            disabled={starting}
+            onClick={onEnterApp}
+          >
+            {starting ? 'Starting…' : 'Start Session'}
           </Button>
+          {startError && (
+            <p className="mt-3 text-sm text-alert" role="alert">
+              {startError}
+            </p>
+          )}
         </motion.div>
 
         {/* Illustration */}
@@ -62,8 +75,8 @@ export default function LandingPage({ onEnterApp }: LandingPageProps) {
               desc: 'Analyzed locally. Video and audio are never saved or transmitted to the cloud.',
             },
             {
-              title: 'Mutual Consent',
-              desc: 'Built as a two-way translator. Wavelength only operates when both sides agree.',
+              title: 'On-device signals',
+              desc: 'Face and attention cues stay on this laptop. Only derived features reach the backend.',
             }
           ].map((feature, i) => (
             <motion.div
