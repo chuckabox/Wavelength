@@ -9,10 +9,9 @@
 A consented social co-pilot for neurodivergent people who want to practice and get better at casual conversation. It reads the *trajectory* of a conversation from the webcam and suggests, never diagnoses: discreet hedged nudges live in the moment, plus an annotated timeline and AI debrief afterward.
 
 ## Origin story (this is our "why us", lead the pitch with it)
-On our UQIES trip, someone we were travelling with really struggled to connect with people. One
-moment stuck with us: a few lines into a conversation with a stranger, they disclosed that they're
-autistic. It was true and honest, but the timing landed wrong and the room went dead silent. They
-didn't get why, and no one told them.
+For most of us, navigating a conversation is intuitive. But for millions of neurodivergent people, the unwritten rules of networking are invisible. We have an autistic friend who is brilliantly bright. 
+
+Last week at a startup networking event, we watched her introduce herself to someone. Within the first 15 seconds, she told him she was autistic. It was honest, but the timing caught him totally off guard. He tried to understand, but the conversation just awkwardly fizzled out after a minute. She could *feel* the tension, but she couldn't read *why* it happened. It shook her confidence so much she went home 30 minutes into a 4-hour event. It's moments like these that make us realize there has to be a better way. She knew something went wrong, but nobody ever tells you exactly what it was.
 
 That is the exact gap this tool fills. Not "you're broken," but "here is what happened in that
 moment, here is *why* it landed the way it did, and here is what you could try next time." We have
