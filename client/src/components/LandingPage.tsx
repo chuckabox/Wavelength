@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { DotLottiePlayer } from '@dotlottie/react-player'
 import { Button } from './ui/button'
+import PitchDeck from './PitchDeck'
 
 interface LandingPageProps {
   onEnterApp: () => void
@@ -156,6 +157,9 @@ export default function LandingPage({ onEnterApp, starting = false, startError =
           </div>
         </div>
       </section>
+
+      {/* Pitch deck — "how it actually works" (appended for the hackathon) */}
+      <PitchDeck />
 
       {/* Founders */}
       <section className="relative w-[100vw] left-[50%] right-[50%] -mx-[50vw] pt-24 pb-32 overflow-hidden">
