@@ -10,18 +10,20 @@
     {
       "t": "00:09",
       "quote": "I've done eleven of these. I usually do the backend...",
-      "observation": "About 32 seconds of your project history with no question back to Alex.",
-      "interpretation": "Long monologues early on can make the other person feel like an audience rather than a participant, which often makes them disengage.",
+      "observation": "About 32 seconds of your project history with no question back to Alex. Partway through, Alex's smile faded and they started glancing out toward the room.",
+      "interpretation": "Long monologues early on can make the other person feel like an audience rather than a participant, which often makes them disengage. The visual drift partway through matches that.",
       "confidence": "medium",
+      "source": "both",
       "why_it_matters": "Early conversation is usually a back-and-forth to find common ground. Trading turns roughly evenly signals interest in them, not just your topic.",
       "try_instead": "Give one line, then hand it back: 'I mostly do backend. What are you hoping to build here?'"
     },
     {
       "t": "00:44",
       "quote": "I'm autistic, so I might come across as a bit blunt.",
-      "observation": "You disclosed being autistic about 40 seconds in, framed as a warning, before much rapport was built. Alex went quiet for a few seconds.",
+      "observation": "You disclosed being autistic about 40 seconds in, framed as a warning, before much rapport was built. Alex went quiet for a few seconds, leaned back slightly, and broke eye contact.",
       "interpretation": "The disclosure itself is fine. Very early, to a stranger, framed as a caution, it can leave the other person unsure how to respond, which often reads as an awkward pause. That is about their uncertainty, not you doing something wrong.",
       "confidence": "medium",
+      "source": "both",
       "why_it_matters": "Personal disclosures usually land better once there is a little rapport, and they land warmer framed as a neutral fact than as a warning about yourself.",
       "try_instead": "If you want to share it, later and lighter works better: 'Heads up, I'm pretty direct, I find it easier that way.' Or share it once you two are clicking."
     },
@@ -31,6 +33,7 @@
       "observation": "Right after the quiet moment, you moved straight to a technical question.",
       "interpretation": "Jumping topics right after an awkward beat can skip the small repair that resets the mood, so the awkwardness carries over.",
       "confidence": "low",
+      "source": "audio",
       "why_it_matters": "A tiny acknowledgement often resets a stalled moment before you move on.",
       "try_instead": "Bridge first: 'Anyway, I didn't mean to info-dump. What are you working on?'"
     }

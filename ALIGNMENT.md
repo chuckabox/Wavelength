@@ -1,8 +1,13 @@
-# Team Alignment - read before building more
+# Team Alignment - DECISIONS LOCKED
 
-> Status as of this commit: three workstreams are pointing in **two different directions** under
-> **three different names**. The principles are aligned; the product is not. This memo lays out
-> the split and the decisions needed to converge. Connor to make the calls, then broadcast.
+> **Resolved by Connor.** Kept for context; the analysis below is what the decisions were based on.
+>
+> 1. **Name: Wavelength** — everywhere. Peter: rename CueReader; Dinil: update README.
+> 2. **Live nudges: roadmap/vision, not in the 24h build.** The debrief is the core and the demo.
+> 3. **Modality: audio is the core signal, video IS in scope** as a supporting layer
+>    (observable behaviour only, fused with the transcript — see `debrief/extract_visuals.py`).
+> 4. **Workflow: everyone builds on their own branch** (`connor-main`, `dinil-main`, Peter's),
+>    merge before demo. The contract between us is `debrief/SPEC.md` + `debrief/sample-debrief.json`.
 
 ## Where everyone actually is
 - **Connor + debrief work (`connor-main`):** post-conversation **debrief only**, audio-first,

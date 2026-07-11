@@ -11,12 +11,16 @@
 - **Peter (website/UI):** renders the JSON below. The schema is the contract between us.
 - **Us (this folder):** the prompt, the output schema, and test fixtures to prove quality.
 
-## Assumptions (from pitch.md, current defaults)
-Audio-first (transcript is the core signal), post-conversation debrief, speaker-labelled input.
-Video/engagement layer is optional and not required for this schema to work.
+## Decisions locked (team-agreed)
+Name: **Wavelength**. Mode: post-conversation debrief (live nudges = roadmap, not build).
+Modality: **audio is the core signal, video is in scope** as a supporting layer that corroborates
+the transcript. Workflow: separate branches (`connor-main`, `dinil-main`, Peter on his), merge
+before demo.
 
 ## Input contract
-A JSON transcript: ordered turns, each with speaker label, start time, and text.
+A JSON transcript: ordered turns, each with speaker label, start time, and text. Optionally a
+`visual_signals` array (produced by `extract_visuals.py` from sampled video frames): observable
+partner behaviour only, never emotion labels.
 
 ```json
 {
@@ -25,6 +29,9 @@ A JSON transcript: ordered turns, each with speaker label, start time, and text.
   "turns": [
     { "speaker": "S1", "t": "00:04", "text": "Hi, I'm ..." },
     { "speaker": "S2", "t": "00:07", "text": "Hey ..." }
+  ],
+  "visual_signals": [
+    { "t": "00:30", "observation": "partner's smile fading, glancing out toward the room" }
   ],
   "user_history_summary": "optional: recurring patterns for this user from pgvector memory"
 }
@@ -51,7 +58,8 @@ interpretation + uncertainty + a concrete alternative.
       "interpretation": "what it likely signalled, hedged: 'often means...', 'may have...'",
       "confidence": "low | medium | high",
       "why_it_matters": "the social rule being surfaced, stated explicitly",
-      "try_instead": "a concrete alternative line or move for next time"
+      "try_instead": "a concrete alternative line or move for next time",
+      "source": "audio | video | both (optional, default audio) — lets the UI badge which channel caught the moment"
     }
   ],
   "patterns": [

@@ -43,6 +43,10 @@ Rules:
 - Focus on concrete, coachable patterns: disclosure timing, talk-time balance, whether they
   asked reciprocal questions, topic transitions, and self-focus vs interest in the other person.
 - The metrics provided are computed facts. Ground your coaching in them; do not contradict them.
+- If visual_signals are provided, treat them as observable behaviour of the conversation partner
+  (posture, gaze, expression movement), never as emotion labels. Fuse them with the transcript.
+  When a visual shift corroborates something in the words, say so and set that moment's
+  "source" to "both". Use "video" if the signal is only visual, "audio" if only verbal.
 - Return ONLY valid JSON matching the schema below. No prose outside the JSON.
 
 If given the user's history summary, note when a pattern is recurring (set "recurring": true)
@@ -53,7 +57,8 @@ Schema:
   "summary": str,
   "metrics": { echo the metrics you were given },
   "moments": [ { "t": str, "quote": str, "observation": str, "interpretation": str,
-                 "confidence": "low|medium|high", "why_it_matters": str, "try_instead": str } ],
+                 "confidence": "low|medium|high", "why_it_matters": str, "try_instead": str,
+                 "source": "audio|video|both" (optional, default audio) } ],
   "patterns": [ { "label": str, "finding": str, "coaching": str, "recurring": bool } ],
   "what_worked": [ str, ... ],   // at least one, genuine
   "next_time": [ str, ... ]      // 2-4 concrete takeaways
@@ -61,6 +66,7 @@ Schema:
 """
 
 CONFIDENCE_VALUES = {"low", "medium", "high"}
+SOURCE_VALUES = {"audio", "video", "both"}
 
 
 def build_messages(transcript: dict, metrics: dict, history_summary: str | None = None) -> list[dict]:
@@ -69,6 +75,8 @@ def build_messages(transcript: dict, metrics: dict, history_summary: str | None 
         "user_speaker": transcript.get("user_speaker"),
         "turns": transcript["turns"],
     }
+    if transcript.get("visual_signals"):
+        payload["visual_signals"] = transcript["visual_signals"]
     if history_summary:
         payload["user_history_summary"] = history_summary
     user_content = (
@@ -109,6 +117,8 @@ def validate_debrief(obj: object) -> list[str]:
         for key in ("t", "quote", "observation", "interpretation", "why_it_matters", "try_instead"):
             require(isinstance(m.get(key), str) and m[key].strip() != "", f"moments[{i}].{key} must be a non-empty string")
         require(m.get("confidence") in CONFIDENCE_VALUES, f"moments[{i}].confidence must be one of {sorted(CONFIDENCE_VALUES)}")
+        if "source" in m:
+            require(m.get("source") in SOURCE_VALUES, f"moments[{i}].source must be one of {sorted(SOURCE_VALUES)}")
 
     patterns = obj.get("patterns")
     require(isinstance(patterns, list), "patterns must be a list")
