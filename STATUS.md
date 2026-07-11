@@ -2,9 +2,10 @@
 
 > Single source of truth. Updated 2026-07-12. If you read one file, read this.
 > Fresh agents: also read [docs/agent-handoff.md](./docs/agent-handoff.md).
-> Product (public framing): **Wavelength** — a consented social co-pilot for neurodivergent
-> people. Reads the *trajectory* of a conversation, nudges gently, debriefs kindly.
-> (North-star vision behind it: [docs/north-star.md](./docs/north-star.md).)
+> Product (public framing): **Wavelength** — a consented social co-pilot for people who
+> struggle to read how others are feeling in live conversation — built first for
+> neurodivergent people (same gap: low vision, social freeze). Suggests, never diagnoses.
+> Pitch framing: [docs/pitch.md](./docs/pitch.md). North star: [docs/north-star.md](./docs/north-star.md).
 
 ---
 

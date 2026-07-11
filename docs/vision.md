@@ -1,10 +1,10 @@
 # Wavelength — Product Vision (public / hackathon framing)
 
-> This is the **public face**: the consented neurodivergent social co-pilot we pitch
-> and demo. The real direction — AI that sees and understands people — lives in
-> [north-star.md](./north-star.md). For the build plan (architecture, schedule, demo),
-> see [BUILD_PLAN.md](../BUILD_PLAN.md). The only fixed constraint is the platform: it
-> runs on DigitalOcean.
+> This is the **public face**: the consented social co-pilot we pitch and demo — built first
+> for neurodivergent people who struggle to read how others are feeling. Full pitch framing
+> (including low vision + social freeze as the same gap): [pitch.md](./pitch.md). The real
+> direction — AI that sees and understands people — lives in [north-star.md](./north-star.md).
+> Build plan: [BUILD_PLAN.md](../BUILD_PLAN.md). Constraint: runs on DigitalOcean.
 
 ---
 
@@ -17,32 +17,37 @@
 
 ## One-line pitch
 
-A consented "social co-pilot" that helps neurodivergent people read social cues in real conversations — nudging gently in the moment, and explaining clearly afterward.
+A consented social co-pilot for people who struggle to read how someone else is feeling in a live conversation — built first for neurodivergent people. Nudges gently in the moment; explains clearly afterward. Suggests, never diagnoses.
 
 ---
 
 ## The problem
 
-Many neurodivergent people (including autistic people, people with ADHD, and others) find real-time social cues hard to read: whether someone is interested or bored, warming up or pulling away, comfortable or overwhelmed, joking or serious. These signals move fast, stack on top of each other, and are easy to miss while also trying to listen, respond, and manage one's own expression. Missing them isn't a lack of intelligence or care — it's a different way of processing social information — but the cost is real: conversations stall, relationships strain, and people are misjudged. Existing tools tend to teach cues from cartoons or flashcards, which don't transfer well to live faces, or they claim to "detect emotions" with a confidence the science doesn't support.
+Many neurodivergent people (including autistic people, people with ADHD, and others) find real-time social-emotional cues hard to read: whether someone is interested or bored, warming up or pulling away, comfortable or overwhelmed, joking or serious. These signals move fast, stack on top of each other, and are easy to miss while also trying to listen, respond, and manage one's own expression. Missing them isn't a lack of intelligence or care — it's a different way of processing social information — but the cost is real: conversations stall, relationships strain, and people are misjudged.
+
+The same *job* shows up elsewhere: people with low vision or blindness often can’t access the facial/body channel at all; people who freeze in networking miss the shift under load. Existing tools tend to teach cues from cartoons or flashcards, which don't transfer well to live faces, or they claim to "detect emotions" with a confidence the science doesn't support.
 
 ## Who it's for
 
-- **Primary:** neurodivergent people who want live support and honest feedback in one-on-one conversations — not a lesson, a co-pilot.
+- **Primary:** neurodivergent people who want live help reading how the other person is responding — not a lesson, a co-pilot.
+- **Same gap:** people with low vision / blindness (cues aren’t visually available); people who generally struggle in social situations and miss shifts under load. Name these as a *second sentence*, not the headline.
 - **Also serves:** the conversation partner, because the tool can help *both* sides understand each other, not just one.
 - **Adjacent uses:** coaching, social-skills practice, self-reflection, and helping neurotypical people notice when *they* are being unclear.
+
+**Framing rule:** specific pain + plain job beats “applies to many people.” Breadth follows the primary story; it doesn’t replace it. See [pitch.md](./pitch.md).
 
 ---
 
 ## The core idea
 
-During a one-on-one conversation where **both people have agreed to it**, the tool watches the partner's facial and attentional signals and tracks how they change over the course of the conversation. When something *meaningful* shifts, it sends the user a discreet, hedged nudge — a suggestion, never a verdict. Afterward, it replays the whole conversation as an annotated emotional timeline with a plain-language debrief of what happened and what to try next. It never claims certainty; every read carries a confidence level. And it is framed as a **two-way translator**, not a tool to "fix" the user.
+During a one-on-one conversation where **both people have agreed to it**, the tool watches the partner's facial and attentional signals and tracks how they change over the course of the conversation. When something *meaningful* shifts, it sends the user a discreet, hedged nudge — a suggestion, never a verdict. Afterward, it replays the whole conversation as an annotated timeline with a plain-language debrief of what happened and what to try next. It never claims certainty; every read carries a confidence level. And it is framed as a **two-way translator** (like captions for the social-emotional channel), not a tool to "fix" the user.
 
 The raw essence, in five sentences:
 
-1. A consented social co-pilot that helps neurodivergent people read social cues during a one-on-one conversation.
-2. It watches the conversation partner — who has agreed to it — and tracks their signals (engagement, emotion, attention) over the conversation.
+1. A consented social co-pilot that helps people who struggle to read how others are feeling — especially neurodivergent people — during a one-on-one conversation.
+2. It watches the conversation partner — who has agreed to it — and tracks their signals (engagement, soft emotion probs, attention) over the conversation.
 3. When something meaningful shifts, it sends the user a discreet, hedged nudge like "engagement dropped — maybe ask a question."
-4. Afterward it replays an annotated emotional timeline of the conversation with a plain-English debrief.
+4. Afterward it replays an annotated timeline of the conversation with a plain-English debrief.
 5. It never asserts verdicts — every read carries a confidence level — and it is framed as a two-way translator, not a tool to "fix" the user.
 
 ---
@@ -74,7 +79,7 @@ Over the conversation it attends to observable, describable signals rather than 
 - **Humility is the product.** Reading faces is genuinely uncertain and unreliable across people and cultures; the design leans into that honesty rather than hiding it. Being trustworthy beats being impressive.
 - **Consent-first.** The tool only operates when everyone involved has agreed. Consent is explicit, visible, and revocable.
 - **Privacy by default.** Treat faces and conversations as sensitive. Keep as little as possible, for as long as necessary, and be transparent about what is kept.
-- **A translator, not a cure.** It does not treat neurodivergence as a defect to correct. It's an accommodation — like captions — that helps people meet in the middle.
+- **A translator, not a cure.** It does not treat neurodivergence as a defect to correct. It's an accommodation — like captions — for people who can’t easily access the social-emotional channel (interpretation, vision, or load). Helps people meet in the middle.
 - **Two-way by design.** It can help both people understand each other, and can help anyone notice when *they* are being unclear.
 - **The user is in charge.** Guidance is optional, ignorable, and never overrides the person's own judgment.
 
@@ -82,7 +87,7 @@ Over the conversation it attends to observable, describable signals rather than 
 
 ## Why it's social good
 
-It targets a real, everyday barrier for a large group of people, and it does so in a way that respects them: it doesn't ask neurodivergent people to mask or perform normalcy, it gives them information and agency. By making social signals more legible *and* by helping both sides understand each other, it reduces misjudgment and friction in the moments where relationships are actually built — job interviews, first meetings, difficult conversations, everyday connection.
+It targets a real, everyday barrier — struggling to read how someone else is feeling in a live conversation — and does so in a way that respects people: it doesn't ask neurodivergent users to mask or perform normalcy, it gives them information and agency. The same accommodation helps when those cues aren’t visually available or get lost under social load. By making social signals more legible *and* by helping both sides understand each other, it reduces misjudgment and friction where relationships are actually built — job interviews, first meetings, difficult conversations, everyday connection.
 
 ---
 

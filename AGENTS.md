@@ -22,9 +22,11 @@ This is a **one-day hackathon build**. Day schedule / demo script:
 
 Two framings, both true, held at once:
 
-- **Public / hackathon face** — a consented social co-pilot that helps neurodivergent
-  people ([docs/vision.md](./docs/vision.md)). This is what we pitch and demo. It is the
-  prize strategy and the ethics moat: hedged, confidence-tagged, *suggest never diagnose*.
+- **Public / hackathon face** — a consented social co-pilot for people who struggle to read
+  how others are feeling in live conversation — built first for neurodivergent people; same
+  gap for low vision and social freeze ([docs/pitch.md](./docs/pitch.md),
+  [docs/vision.md](./docs/vision.md)). Hedged, confidence-tagged, *suggest never diagnose*.
+  Pitch rule: specific pain + plain job; breadth is a second sentence, not the headline.
 - **North star (the real vision)** — AI that can **see and understand people by looking
   at them**: emotion, body language, attention, tension, read from video and reasoned
   about over time ([docs/north-star.md](./docs/north-star.md)). The neurodivergent tool
