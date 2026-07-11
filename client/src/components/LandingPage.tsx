@@ -88,14 +88,19 @@ export default function LandingPage({ onEnterApp }: LandingPageProps) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col items-start text-left"
+          className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center text-left"
         >
-          <h2 className="font-sans text-[24px] tracking-tight font-medium text-ink mb-4">
-            A translator, not a lie detector.
-          </h2>
-          <p className="font-sans text-[15px] text-ink-2 leading-relaxed max-w-[55ch]">
-            Wavelength does not judge inner states or fix people. It is built as an accommodation for neurodivergent individuals to help both sides of a conversation understand each other better.
-          </p>
+          <div className="w-full flex items-center justify-center lg:justify-end pr-0 lg:pr-8">
+            <img src="/notification.svg" alt="Notification illustration" className="w-full max-w-[350px] h-auto object-contain" />
+          </div>
+          <div className="flex flex-col items-start">
+            <h2 className="font-sans text-[28px] md:text-[32px] tracking-tight font-medium text-ink mb-4">
+              A translator, not a lie detector.
+            </h2>
+            <p className="font-sans text-[16px] text-ink-2 leading-relaxed max-w-[45ch]">
+              Wavelength does not judge inner states or fix people. It is built as an accommodation for neurodivergent individuals to help both sides of a conversation understand each other better.
+            </p>
+          </div>
         </motion.div>
       </section>
     </div>
