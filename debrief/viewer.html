@@ -66,6 +66,7 @@
     </select>
     <button class="primary" id="analyze">Analyze sample conversation</button>
     <button id="offline">Load offline fixture</button>
+    <button id="speak">🔊 Read aloud</button>
     <span id="status"></span>
   </div>
 
@@ -99,7 +100,26 @@ const OFFLINE_DEBRIEF = null; // filled below by fetch fallback or embed script 
 
 function esc(s) { const d = document.createElement("div"); d.textContent = s ?? ""; return d.innerHTML; }
 
+let lastDebrief = null; // for Read aloud
+
+function speak() {
+  if (!lastDebrief) return;
+  const synth = window.speechSynthesis;
+  if (synth.speaking) { synth.cancel(); return; } // toggle off
+  const text = [
+    "Here's your debrief.", lastDebrief.summary,
+    "What worked:", ...(lastDebrief.what_worked || []),
+    "For next time:", ...(lastDebrief.next_time || []),
+  ].join(" ");
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.95; u.pitch = 1.0; // calm, unhurried
+  const v = synth.getVoices().find(v => /female|natural|samantha|zira|aria/i.test(v.name));
+  if (v) u.voice = v;
+  synth.speak(u);
+}
+
 function render(d) {
+  lastDebrief = d;
   const m = d.metrics || {};
   const tiles = [
     [Math.round((m.user_talk_ratio ?? 0) * 100) + "%", "your share of talking"],
@@ -169,6 +189,7 @@ async function loadOffline() {
 
 document.getElementById("analyze").onclick = analyze;
 document.getElementById("offline").onclick = loadOffline;
+document.getElementById("speak").onclick = speak;
 loadOffline();
 </script>
 </body>
