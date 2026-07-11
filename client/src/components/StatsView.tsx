@@ -5,7 +5,6 @@ import {
 } from 'recharts'
 import { motion } from 'framer-motion'
 import { statsData, type StatsChannel } from '../data/sessions'
-import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 
 const CHANNELS: { key: StatsChannel; label: string }[] = [

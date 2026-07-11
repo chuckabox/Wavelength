@@ -140,6 +140,13 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
     }
   }
 
+  const signalRows: { label: string; width: number; variant: 'positive' | 'alert' | 'accent' }[] = [
+    { label: 'Engagement', width: 42, variant: 'alert' },
+    { label: 'Attention', width: 61, variant: 'accent' },
+    { label: 'Openness', width: 28, variant: 'alert' },
+    { label: 'Ease', width: 74, variant: 'positive' },
+  ]
+
   return (
     <section>
       <div className="mb-[26px]">
@@ -194,7 +201,7 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
             )}
             
             {videoSource === 'camera' && (
-              <Button variant="outline" className="flex-1 text-alert border-alert/20 hover:bg-alert/10" onClick={handleStopCamera}>
+              <Button variant="default" className="flex-1 text-alert border-alert/20 hover:bg-alert/10" onClick={handleStopCamera}>
                 Stop Camera
               </Button>
             )}
