@@ -40,7 +40,7 @@ const EnvSchema = z.object({
   ),
 
   // Comma-separated list of allowed browser origins.
-  CORS_ORIGIN: z.preprocess(emptyToUndefined, z.string().default('http://localhost:5173')),
+  CORS_ORIGIN: z.preprocess(emptyToUndefined, z.string().default('http://localhost:5173,http://localhost:5176')),
 
   // Absolute or relative path to the Vite client build (Phase 4 static serve).
   CLIENT_DIST: z.preprocess(emptyToUndefined, z.string().optional()),
