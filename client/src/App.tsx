@@ -27,7 +27,7 @@ export default function App() {
   }, [view])
 
   return (
-    <div className="max-w-[1160px] mx-auto px-7 pb-14">
+    <div className="relative max-w-[1160px] mx-auto px-7 pb-14">
       <Header currentView={view} onViewChange={setView} />
       <AnimatePresence mode="wait">
         <motion.div
@@ -44,13 +44,22 @@ export default function App() {
           {view === 'timeline' && <TimelineView />}
         </motion.div>
       </AnimatePresence>
-      <footer className="mt-16 pt-8 border-t border-rule text-center">
-        <div className="max-w-xl mx-auto">
-          <h3 className="text-sm font-medium text-ink-2 mb-2">Privacy FAQ</h3>
-          <p className="text-xs text-ink-3 leading-relaxed">
-            We don't record or store your data. We only perform live real-time analysis on your device. 
-            If you upload a clip, it gets analyzed locally in memory but is never saved or transmitted.
-          </p>
+      <footer className="mt-12 pt-12 pb-8 border-t border-rule">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 items-start mb-8">
+          <div className="text-left">
+            <span className="font-sans font-medium tracking-tight text-xl text-ink">wavelength</span>
+            <p className="font-sans text-[14px] text-ink-2 mt-3 max-w-[30ch]">
+              A consented social co-pilot for one-on-one conversations.
+            </p>
+          </div>
+          <div className="text-left flex flex-col sm:flex-row gap-6 md:gap-12">
+            <a href="#" className="text-sm font-medium text-ink-2 hover:text-accent transition-colors">Privacy FAQ</a>
+            <a href="#" className="text-sm font-medium text-ink-2 hover:text-accent transition-colors">Terms of Service</a>
+          </div>
+        </div>
+        <div className="flex flex-col md:flex-row justify-between items-center text-[13px] text-ink-3">
+          <p>© {new Date().getFullYear()} Wavelength. All rights reserved.</p>
+          <p className="mt-4 md:mt-0">Analyzed locally. Never stored.</p>
         </div>
       </footer>
     </div>
