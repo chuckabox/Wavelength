@@ -27,7 +27,7 @@ from pathlib import Path
 from metrics import compute_metrics
 
 BASE_URL = "https://inference.do-ai.run/v1/"
-DEFAULT_MODEL = "llama3.3-70b-instruct"  # swap to anthropic-claude-* for the quality flex
+DEFAULT_MODEL = "anthropic-claude-haiku-4.5"  # confirmed in DO catalog; swap models for the flex
 
 SYSTEM_PROMPT = """\
 You are a direct, concrete conversation coach for a neurodivergent adult who wants to get
@@ -140,10 +140,16 @@ def validate_debrief(obj: object) -> list[str]:
 
 
 def _extract_json(text: str) -> object:
-    start, end = text.find("{"), text.rfind("}")
+    # Models often wrap JSON in a ```json ... ``` fence; strip it first.
+    fenced = text.strip()
+    if fenced.startswith("```"):
+        fenced = fenced.split("```", 2)[1]
+        if fenced.lstrip().lower().startswith("json"):
+            fenced = fenced.lstrip()[4:]
+    start, end = fenced.find("{"), fenced.rfind("}")
     if start == -1 or end == -1:
         raise ValueError("no JSON object found in model output")
-    return json.loads(text[start : end + 1])
+    return json.loads(fenced[start : end + 1])
 
 
 def generate_debrief(transcript: dict, model: str, history_summary: str | None = None) -> dict:
@@ -160,7 +166,7 @@ def generate_debrief(transcript: dict, model: str, history_summary: str | None =
     resp = client.chat.completions.create(
         model=model,
         messages=build_messages(transcript, metrics, history_summary),
-        max_completion_tokens=1500,
+        max_completion_tokens=4000,
     )
     debrief = _extract_json(resp.choices[0].message.content)
     problems = validate_debrief(debrief)
