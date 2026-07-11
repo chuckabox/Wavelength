@@ -1,8 +1,10 @@
-# Wavelength — Product Vision
+# Wavelength — Product Vision (public / hackathon framing)
 
-> The "why" and "what", not the "how". For the build plan (architecture, schedule,
-> demo), see [BUILD_PLAN.md](../BUILD_PLAN.md). The only fixed constraint is the
-> platform: it runs on DigitalOcean.
+> This is the **public face**: the consented neurodivergent social co-pilot we pitch
+> and demo. The real direction — AI that sees and understands people — lives in
+> [north-star.md](./north-star.md). For the build plan (architecture, schedule, demo),
+> see [BUILD_PLAN.md](../BUILD_PLAN.md). The only fixed constraint is the platform: it
+> runs on DigitalOcean.
 
 ---
 
