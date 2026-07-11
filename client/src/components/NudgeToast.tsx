@@ -22,7 +22,7 @@ export default function NudgeToast({ nudge, onDismiss }: Props) {
           aria-live="polite"
         >
           <div className="flex items-start justify-between gap-3 mb-2">
-            <p className="font-mono text-[10px] tracking-[0.08em] uppercase text-ink-3">Nudge</p>
+            <p className="font-mono text-[10px] tracking-[0.08em] uppercase text-ink-3">Suggestion</p>
             <Badge variant="accent" size="sm">
               {nudge.confidence}
             </Badge>

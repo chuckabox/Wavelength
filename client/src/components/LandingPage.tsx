@@ -59,7 +59,10 @@ export default function LandingPage({ onEnterApp, starting = false, startError =
       </section>
 
       {/* Core Features */}
-      <section className="w-[100vw] relative left-[50%] right-[50%] -mx-[50vw] bg-paper-2 py-24 px-7">
+      <section className="w-[100vw] relative left-[50%] right-[50%] -mx-[50vw] bg-paper-2 py-24 px-7 overflow-hidden">
+        <div className="absolute inset-0 -z-10 pointer-events-none opacity-[0.06] flex items-center justify-center" aria-hidden="true">
+          <img src="/wave.svg" alt="" className="w-full h-full object-cover" />
+        </div>
         <div className="max-w-[1160px] mx-auto">
           <h2 className="font-sans text-[28px] md:text-[32px] tracking-tight font-medium text-ink mb-16 text-center">
             Core features
@@ -67,7 +70,7 @@ export default function LandingPage({ onEnterApp, starting = false, startError =
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           {[
             {
-              title: 'Live Nudges',
+              title: 'Live Suggestions',
               desc: 'Gentle suggestions delivered privately in the moment when meaningful shifts occur.',
             },
             {
@@ -134,7 +137,7 @@ export default function LandingPage({ onEnterApp, starting = false, startError =
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { num: '01', title: 'Start Session', desc: 'Secure mutual consent and start the camera. Analysis runs entirely locally on your device.' },
-              { num: '02', title: 'Get Live Nudges', desc: 'Receive discreet, gentle suggestions in the moment when meaningful shifts occur in the conversation.' },
+              { num: '02', title: 'Get Live Suggestions', desc: 'Receive discreet, gentle suggestions in the moment when meaningful shifts occur in the conversation.' },
               { num: '03', title: 'Review the Debrief', desc: 'After the session, review an annotated timeline and a plain-language summary of how it went.' }
             ].map((step, i) => (
               <motion.div

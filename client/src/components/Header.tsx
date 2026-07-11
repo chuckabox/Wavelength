@@ -1,11 +1,8 @@
-import { Button } from './ui/button';
 import type { AppPhase } from '@/session/SessionContext';
 
 interface HeaderProps {
   phase: AppPhase;
   onBrandClick: () => void;
-  onEndSession: () => void;
-  onKill: () => void;
   onPhaseChange?: (phase: AppPhase) => void;
 }
 
@@ -14,7 +11,7 @@ const VIEWS: { key: AppPhase; label: string }[] = [
   { key: 'timeline', label: 'Timeline' },
 ];
 
-export default function Header({ phase, onBrandClick, onEndSession, onKill, onPhaseChange }: HeaderProps) {
+export default function Header({ phase, onBrandClick, onPhaseChange }: HeaderProps) {
   return (
     <>
       <header className="flex items-baseline justify-between gap-4 pt-[26px]">
@@ -31,7 +28,7 @@ export default function Header({ phase, onBrandClick, onEndSession, onKill, onPh
             <nav className="flex items-center gap-[26px]" aria-label="Main">
               <button
                 onClick={() => onPhaseChange('live')}
-                className={`font-sans text-[13px] tracking-[0.02em] pb-2 pt-0.5 border-none bg-transparent cursor-pointer ${
+                className={`font-sans text-[13px] tracking-[0.02em] pb-2 pt-0.5 border-none bg-transparent cursor-pointer transition-colors ${
                   phase === 'live' || phase === 'debrief'
                     ? 'text-ink font-semibold shadow-[inset_0_-2px_0_0_var(--color-accent)]'
                     : 'text-ink-2 font-normal hover:text-ink'
@@ -43,7 +40,7 @@ export default function Header({ phase, onBrandClick, onEndSession, onKill, onPh
                 <button
                   key={key}
                   onClick={() => onPhaseChange(key)}
-                  className={`font-sans text-[13px] tracking-[0.02em] pb-2 pt-0.5 border-none bg-transparent cursor-pointer ${
+                  className={`font-sans text-[13px] tracking-[0.02em] pb-2 pt-0.5 border-none bg-transparent cursor-pointer transition-colors ${
                     phase === key
                       ? 'text-ink font-semibold shadow-[inset_0_-2px_0_0_var(--color-accent)]'
                       : 'text-ink-2 font-normal hover:text-ink'
@@ -56,21 +53,6 @@ export default function Header({ phase, onBrandClick, onEndSession, onKill, onPh
           )}
 
           <div className="flex items-center gap-3">
-            {phase === 'live' && (
-              <>
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="!border-alert !text-alert hover:!bg-alert-soft"
-                  onClick={onKill}
-                >
-                  Kill switch
-                </Button>
-                <Button variant="primary" size="sm" onClick={onEndSession}>
-                  End session
-                </Button>
-              </>
-            )}
             {phase === 'debrief' && (
               <span className="font-mono text-[11px] tracking-[0.06em] uppercase text-ink-3">
                 Debrief

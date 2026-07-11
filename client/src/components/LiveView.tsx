@@ -606,14 +606,14 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
                   disabled={!liveFrame || nudgeBusy}
                   onClick={() => void handleNudge()}
                 >
-                  {nudgeBusy ? 'Requesting…' : 'Request nudge'}
+                  {nudgeBusy ? 'Requesting…' : 'Request help'}
                 </Button>
-                <label className="flex items-center gap-2 text-[12px] text-ink-2 cursor-pointer">
+                <label className="flex items-center gap-2 text-[13px] text-ink-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={autoNudge}
                     onChange={(e) => setAutoNudge(e.target.checked)}
-                    className="accent-[var(--color-accent)]"
+                    className="accent-[var(--color-accent)] w-4 h-4"
                   />
                   Auto-nudge (event engine · 90s cooldown)
                 </label>
@@ -639,7 +639,7 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
             <CardContent>
               <div className="flex flex-col">
                 {recentNudges.length === 0 && (
-                  <p className="text-[13px] text-ink-3">No nudges yet — request one when ready.</p>
+                  <p className="text-[13px] text-ink-3">No suggestions yet — request one when ready.</p>
                 )}
                 {recentNudges.map((ev, i, arr) => (
                   <div

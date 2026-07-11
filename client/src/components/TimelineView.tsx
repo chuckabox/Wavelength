@@ -39,7 +39,7 @@ export default function TimelineView() {
         </div>
         <div className="flex items-center justify-center h-[40vh] border border-dashed border-rule rounded-xl bg-paper-50">
           <p className="text-ink-3 font-mono text-sm tracking-widest uppercase">
-            No data until we actually start stuff
+            No session data yet
           </p>
         </div>
       </section>

@@ -137,7 +137,7 @@ export default function DebriefView() {
           The conversation, annotated
         </h1>
         <p className="text-[15px] text-ink-2 max-w-[52ch]">
-          Engagement over time with nudge markers. AI summary streams from Claude on
+          Engagement over time with suggestion markers. AI summary streams from Claude on
           DigitalOcean Gradient.
         </p>
       </div>
@@ -229,7 +229,7 @@ export default function DebriefView() {
                       x={n.t}
                       stroke="#A39D8E"
                       strokeDasharray="4 4"
-                      label={{ value: 'nudge', fill: '#A39D8E', fontSize: 10 }}
+                      label={{ value: 'suggestion', fill: '#A39D8E', fontSize: 10 }}
                     />
                   ))}
                 </AreaChart>
@@ -259,7 +259,7 @@ export default function DebriefView() {
               <dd className="font-mono text-ink">{frames.length}</dd>
             </div>
             <div className="border border-rule p-3">
-              <dt className="text-ink-3 text-xs mb-1">Nudges</dt>
+              <dt className="text-ink-3 text-xs mb-1">Suggestions</dt>
               <dd className="font-mono text-ink">{nudges.length}</dd>
             </div>
           </dl>

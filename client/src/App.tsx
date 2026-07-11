@@ -7,6 +7,7 @@ import DebriefView from './components/DebriefView';
 import StatsView from './components/StatsView';
 import TimelineView from './components/TimelineView';
 import { SessionProvider, useSession } from './session/SessionContext';
+import { Button } from './components/ui/button';
 
 const pageVariants = {
   initial: { opacity: 0, y: 8 },
@@ -37,8 +38,6 @@ function AppShell() {
           if (phase === 'live') kill();
           else setPhase('home');
         }}
-        onEndSession={() => void endAndDebrief()}
-        onKill={kill}
         onPhaseChange={(newPhase) => {
           if (newPhase === 'live') {
             void startSession();
@@ -69,12 +68,13 @@ function AppShell() {
                 <p className="text-ink-3 font-mono text-sm tracking-widest uppercase text-center max-w-md">
                   Error: {startError}
                 </p>
-                <button
+                <Button
+                  variant="primary"
+                  className="mt-4 rounded-full"
                   onClick={() => void startSession()}
-                  className="mt-4 px-4 py-2 bg-ink text-paper rounded-full text-sm font-medium hover:opacity-90"
                 >
                   Retry Connection
-                </button>
+                </Button>
               </div>
             ) : (
               <LandingPage onEnterApp={() => void startSession()} />
@@ -98,8 +98,8 @@ function AppShell() {
             </p>
           </div>
           <div className="text-left flex flex-col gap-3 items-start">
-            <button onClick={() => setModal('privacy')} className="text-[13px] font-medium text-ink-2 hover:text-accent transition-colors">Privacy FAQ</button>
-            <button onClick={() => setModal('terms')} className="text-[13px] font-medium text-ink-2 hover:text-accent transition-colors">Terms of Service</button>
+            <Button variant="link" size="sm" onClick={() => setModal('privacy')}>Privacy FAQ</Button>
+            <Button variant="link" size="sm" onClick={() => setModal('terms')}>Terms of Service</Button>
           </div>
         </div>
         <div className="flex flex-col md:flex-row justify-between items-center text-[13px] text-ink-3">
@@ -129,12 +129,13 @@ function AppShell() {
               <h3 className="font-sans text-[20px] font-medium text-ink mb-4">{MODAL_CONTENT[modal].title}</h3>
               <p className="font-sans text-[15px] text-ink-2 leading-relaxed">{MODAL_CONTENT[modal].content}</p>
               <div className="mt-8 flex justify-end">
-                <button
+                <Button
+                  variant="default"
+                  className="rounded-full"
                   onClick={() => setModal(null)}
-                  className="px-6 py-2.5 bg-paper-2 hover:bg-rule text-ink rounded-full text-[14px] font-medium transition-colors"
                 >
                   Close
-                </button>
+                </Button>
               </div>
             </motion.div>
           </div>
