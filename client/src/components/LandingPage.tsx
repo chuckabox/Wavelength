@@ -9,7 +9,7 @@ export default function LandingPage({ onEnterApp }: LandingPageProps) {
   const reduce = useReducedMotion()
 
   return (
-    <div className="flex flex-col gap-24 md:gap-32 pt-16 pb-24 w-full">
+    <div className="flex flex-col gap-20 md:gap-24 pt-16 pb-24 w-full">
       
       {/* Hero Section */}
       <section className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-12 items-center">
@@ -47,7 +47,7 @@ export default function LandingPage({ onEnterApp }: LandingPageProps) {
 
       {/* Core Features */}
       <section>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           {[
             {
               title: 'Live Nudges',
@@ -72,7 +72,7 @@ export default function LandingPage({ onEnterApp }: LandingPageProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.6, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col items-start text-left"
+              className="flex flex-col items-start text-left bg-white border border-rule rounded-xl p-8 md:p-10 shadow-sm"
             >
               <h3 className="font-sans text-[18px] font-medium text-ink mb-3">{feature.title}</h3>
               <p className="font-sans text-[15px] text-ink-2 leading-relaxed max-w-[35ch]">{feature.desc}</p>
@@ -93,7 +93,7 @@ export default function LandingPage({ onEnterApp }: LandingPageProps) {
           <div className="w-full flex items-center justify-center lg:justify-end pr-0 lg:pr-8">
             <img src="/notification.svg" alt="Notification illustration" className="w-full max-w-[350px] h-auto object-contain" />
           </div>
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-start bg-white border border-rule rounded-xl p-8 md:p-10 shadow-sm w-full">
             <h2 className="font-sans text-[28px] md:text-[32px] tracking-tight font-medium text-ink mb-4">
               A translator, not a lie detector.
             </h2>
