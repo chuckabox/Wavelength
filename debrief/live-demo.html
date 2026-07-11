@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wavelength — Live Demo</title>
+<style>
+  /* Reference + fallback for the full 3-state loop, driven by the REAL deployed API.
+     NOT the polished product UI (that's Peter's React). This proves LIVE + DEBRIEF work
+     end to end with no build step, and shows Dinil the event-engine -> /api/nudge contract.
+     Engagement here is SIMULATED (buttons), so it runs with no camera. */
+  :root {
+    --bg:#f6f7f9; --card:#fff; --ink:#2b3440; --sub:#6b7684; --line:#e4e8ed;
+    --accent:#3a6ea5; --good:#2e7d5b; --warn:#b8642a; --bad:#b0413e;
+  }
+  *{box-sizing:border-box} body{font-family:"Lexend",system-ui,sans-serif;background:var(--bg);color:var(--ink);margin:0}
+  .wrap{max-width:820px;margin:0 auto;padding:1.5rem 1.25rem 4rem}
+  h1{font-size:1.25rem;margin:0 0 .2rem} h1 .w{color:var(--accent)}
+  .sub{color:var(--sub);font-size:.85rem;margin-bottom:1.2rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:1rem}
+  button{font:inherit;padding:.55rem .9rem;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);cursor:pointer}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button:disabled{opacity:.5;cursor:default}
+  .hidden{display:none}
+  .meter{height:26px;border-radius:8px;background:linear-gradient(90deg,#e9edf1,#e9edf1);position:relative;overflow:hidden;border:1px solid var(--line)}
+  .meter > i{position:absolute;left:0;top:0;bottom:0;width:80%;transition:width .5s ease,background .5s ease}
+  .row{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+  .label{font-size:.8rem;color:var(--sub);text-transform:uppercase;letter-spacing:.05em;margin:.9rem 0 .35rem}
+  canvas{width:100%;height:120px;border:1px solid var(--line);border-radius:8px;background:#fbfcfd}
+  #nudge{border-left:4px solid var(--warn);background:#fdf6ee}
+  #nudge .t{font-size:1.05rem} #nudge .ev{color:var(--sub);font-size:.8rem;margin-top:.35rem}
+  .badge{font-size:.72rem;padding:.1rem .5rem;border-radius:999px;background:var(--accent);color:#fff}
+  .stat{font-size:1.3rem;font-weight:600} .statlbl{color:var(--sub);font-size:.78rem}
+  .moment{border-left:3px solid var(--line);padding-left:.7rem;margin:.6rem 0}
+  .moment .mt{font-weight:600;color:var(--accent)}
+  .try{background:#eef4ee;border-radius:8px;padding:.5rem .7rem;margin-top:.35rem;font-size:.9rem}
+  #status{color:var(--sub);font-size:.82rem;margin-left:.4rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span class="w">Wavelength</span> — Live Demo <span class="badge">reference / fallback</span></h1>
+  <div class="sub">The full CONSENT → LIVE → DEBRIEF loop against the real DigitalOcean API. Engagement is simulated with buttons (no camera needed), so this always works on stage.</div>
+
+  <!-- STATE 1: CONSENT -->
+  <div id="consent" class="card">
+    <b>Consent</b>
+    <p style="color:var(--sub)">Wavelength only runs when both people agree. It reads observable signals (not emotions), everything shows a confidence level, and the video never leaves the laptop. This demo simulates the signals.</p>
+    <button class="primary" id="startBtn">Both consent → Start conversation</button>
+  </div>
+
+  <!-- STATE 2: LIVE -->
+  <div id="live" class="card hidden">
+    <div class="row" style="justify-content:space-between">
+      <b>Live</b><span id="clock" style="color:var(--sub)">00:00</span>
+    </div>
+    <div class="label">Partner engagement (simulated)</div>
+    <div class="meter"><i id="engBar"></i></div>
+    <canvas id="chart" width="760" height="120"></canvas>
+    <div class="label">You are…</div>
+    <div class="row">
+      <button id="talkBtn" class="primary">🗣 Talking (holding the floor)</button>
+      <button id="listenBtn">👂 Asking about them / listening</button>
+      <span id="status"></span>
+    </div>
+    <div class="row" style="margin-top:.9rem;gap:1.5rem">
+      <div><div class="stat" id="talkPct">0%</div><div class="statlbl">your talk time</div></div>
+      <div><div class="stat" id="floorS">0s</div><div class="statlbl">current monologue</div></div>
+      <div><div class="stat" id="frameN">0</div><div class="statlbl">frames → Postgres</div></div>
+    </div>
+    <div id="nudge" class="card hidden" style="margin-top:1rem">
+      <div class="t"></div><div class="ev"></div>
+    </div>
+    <button id="endBtn" style="margin-top:1rem">End session → Debrief</button>
+  </div>
+
+  <!-- STATE 3: DEBRIEF -->
+  <div id="debrief" class="card hidden">
+    <b>Debrief</b><span id="dstatus" style="color:var(--sub)"></span>
+    <div id="debriefBody"></div>
+  </div>
+</div>
+
+<script type="module">
+import { framesToVisualSignals } from "./frames_to_signals.js";
+
+const API = "https://wavelength-brain-37j5z.ondigitalocean.app";
+const el = (id) => document.getElementById(id);
+
+let t = 0, engagement = 0.85, mode = "talk", floorStart = 0, talkSeconds = 0;
+let frames = [], pendingFrames = [], frameCount = 0, lastNudge = -999, timer = null;
+const chart = el("chart"), ctx = chart.getContext("2d");
+
+function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+
+function draw() {
+  ctx.clearRect(0,0,chart.width,chart.height);
+  ctx.strokeStyle = "#cfd6dd"; ctx.beginPath(); ctx.moveTo(0,chart.height*0.6); ctx.lineTo(chart.width,chart.height*0.6); ctx.stroke();
+  ctx.strokeStyle = "#3a6ea5"; ctx.lineWidth = 2; ctx.beginPath();
+  const n = frames.length; const step = n>1 ? chart.width/(n-1) : 0;
+  frames.forEach((f,i)=>{ const y = chart.height-(f.engagement*chart.height); i?ctx.lineTo(i*step,y):ctx.moveTo(0,y); });
+  ctx.stroke();
+}
+
+async function tick() {
+  t++;
+  // simulate engagement: talking drifts it down, listening recovers it
+  const drift = mode === "talk" ? -0.06 : 0.09;
+  engagement = Math.max(0.05, Math.min(1, engagement + drift + (Math.random()-0.5)*0.03));
+  if (mode === "talk") talkSeconds++;
+
+  const frame = { t, engagement, valence: engagement, attention: engagement,
+                  signals: { gazeAway: 1-engagement, smile: engagement, lean: engagement-0.5 },
+                  confidence: frames.length < 8 ? "low" : "medium" };
+  frames.push(frame); pendingFrames.push(frame);
+
+  el("clock").textContent = fmt(t);
+  el("engBar").style.width = Math.round(engagement*100)+"%";
+  el("engBar").style.background = engagement>0.6 ? "#2e7d5b" : engagement>0.4 ? "#b8642a" : "#b0413e";
+  el("floorS").textContent = (mode==="talk" ? t-floorStart : 0)+"s";
+  el("talkPct").textContent = Math.round(talkSeconds/t*100)+"%";
+  draw();
+
+  // batch frames to Postgres every 5s (fire-and-forget)
+  if (pendingFrames.length >= 5) {
+    const batch = pendingFrames.splice(0);
+    fetch(`${API}/api/frames`, {method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({conversation_id:"live-demo", frames:batch})})
+      .then(r=>r.json()).then(d=>{ frameCount = d.total_for_session ?? frameCount+batch.length; el("frameN").textContent = frameCount; })
+      .catch(()=>{ frameCount += batch.length; el("frameN").textContent = frameCount; });
+  }
+
+  // client-side event engine: sustained low engagement + you've held the floor + cooldown
+  const heldFloor = mode==="talk" ? t-floorStart : 0;
+  if (engagement < 0.4 && heldFloor > 5 && t-lastNudge > 18) { lastNudge = t; fireNudge(heldFloor); }
+}
+
+async function fireNudge(heldFloor) {
+  const evidence = ["engagement dropping", `you've held the floor ${heldFloor}s`, "gaze drifting away"];
+  el("status").textContent = "nudge firing…";
+  try {
+    const r = await fetch(`${API}/api/nudge`, {method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({confidence:"medium", evidence, context:"catching up at a networking event"})});
+    const d = await r.json();
+    showNudge(d.text || "Maybe pause and ask them a question?", d.confidence || "medium", evidence);
+  } catch { showNudge("They might be drifting — maybe ask them a question?", "low", evidence); }
+  el("status").textContent = "";
+}
+
+function showNudge(text, conf, evidence) {
+  const box = el("nudge"); box.classList.remove("hidden");
+  box.querySelector(".t").textContent = "💡 " + text + "  ";
+  box.querySelector(".t").insertAdjacentHTML("beforeend", `<span class="badge">${conf}</span>`);
+  box.querySelector(".ev").textContent = "why: " + evidence.join(" · ");
+}
+
+el("startBtn").onclick = () => {
+  el("consent").classList.add("hidden"); el("live").classList.remove("hidden");
+  floorStart = 0; timer = setInterval(tick, 1000);
+};
+el("talkBtn").onclick = () => { mode="talk"; floorStart=t; el("talkBtn").classList.add("primary"); el("listenBtn").classList.remove("primary"); };
+el("listenBtn").onclick = () => { mode="listen"; el("nudge").classList.add("hidden"); el("listenBtn").classList.add("primary"); el("talkBtn").classList.remove("primary"); };
+
+el("endBtn").onclick = async () => {
+  clearInterval(timer);
+  el("live").classList.add("hidden"); el("debrief").classList.remove("hidden");
+  el("dstatus").textContent = " — generating on DigitalOcean (~20s)…";
+  // convert simulated frames -> visual_signals the debrief consumes
+  const visual_signals = framesToVisualSignals(frames);
+  // a short transcript reflecting the simulated monologue (real capture uses recorder.html)
+  const transcript = {
+    conversation_id: "live-demo", user_speaker: "S1", visual_signals,
+    turns: [
+      {speaker:"S1", t:"00:02", text:"Hey! So I've been working on this project for months, it's a whole sensor pipeline, and honestly the hard part was the calibration, which took ages because..."},
+      {speaker:"S2", t:"00:20", text:"Oh, cool."},
+      {speaker:"S1", t:"00:22", text:"Yeah and then I rewrote the whole thing in Rust, and the throughput tripled, it was great, I could go on about the borrow checker for hours."},
+      {speaker:"S2", t:"00:38", text:"Ha, I bet. Anyway, I might go grab a drink."}
+    ]
+  };
+  try {
+    const r = await fetch(`${API}/api/debrief?model=anthropic-claude-haiku-4.5`, {method:"POST",
+      headers:{"Content-Type":"application/json"}, body:JSON.stringify(transcript)});
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error||r.status);
+    renderDebrief(d, visual_signals.length);
+  } catch(e) { el("dstatus").textContent = " — error: "+e.message; }
+};
+
+function renderDebrief(d, vsCount) {
+  el("dstatus").textContent = ` — ${frameCount} signal frames captured, ${vsCount} notable shifts`;
+  let h = `<p style="font-size:1.02rem">${d.summary}</p>`;
+  h += `<div class="row" style="gap:1.5rem;margin:.6rem 0">
+    <div><div class="stat">${Math.round((d.metrics.user_talk_ratio||0)*100)}%</div><div class="statlbl">you talked</div></div>
+    <div><div class="stat">${d.metrics.questions_asked_by_user}</div><div class="statlbl">questions you asked</div></div>
+    <div><div class="stat">${d.metrics.longest_user_monologue_seconds}s</div><div class="statlbl">longest monologue</div></div></div>`;
+  h += `<div class="label">Moments</div>`;
+  for (const m of d.moments||[]) h += `<div class="moment"><span class="mt">${m.t}</span> <span class="badge">${m.source||"audio"}</span> ${m.observation}
+    <div class="try"><b>Try:</b> ${m.try_instead}</div></div>`;
+  h += `<div class="label">What worked</div><ul>` + (d.what_worked||[]).map(x=>`<li>${x}</li>`).join("") + `</ul>`;
+  el("debriefBody").innerHTML = h;
+}
+</script>
+</body>
+</html>

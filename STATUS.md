@@ -27,6 +27,11 @@ isn't wired to it yet** (that's the critical path). Everything is now merged on 
 - Typed TS API client for the frontend: `debrief/wavelength-client.ts`.
 - LIVE→DEBRIEF bridge: `debrief/frames_to_signals.js`.
 - Reference UI + fallback: `debrief/viewer.html`. Capture tool: `debrief/recorder.html`.
+- **Working full-loop fallback demo: `debrief/live-demo.html`** — the entire CONSENT → LIVE →
+  DEBRIEF flow driven by the real API, no camera/build needed (engagement simulated by buttons).
+  Verified end to end: frames persist, a real nudge fires live, the debrief generates. If the
+  polished React app isn't wired in time, THIS is a guaranteed-working demo. Serve any static way
+  (e.g. `python -m http.server` in `debrief/`) and open it.
 - Demo script + staging: `BUILD_PLAN.md` §6. Q&A prep + fallback ladder: `pitch-script.md`,
   `demo-runsheet.md`.
 
