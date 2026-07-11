@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "digitalocean-ai": {
+      "source": "ajot/digitalocean-ai",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "3ad3daf3e2cf2b11cf47677d6678917c8e83d78c5f988c4c9826eb3c913a43df"
+    }
+  }
+}
