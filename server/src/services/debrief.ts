@@ -10,30 +10,28 @@ function normalizeDebriefRequest(req: DebriefRequest): DebriefInput {
   return { ...req, transcript: req.transcript ?? [] };
 }
 
-const DEBRIEF_SYSTEM = `You write post-conversation debriefs for Wavelength, a consented social co-pilot
-that reads two channels: the *face* (voluntary, observable expression) and the *body*
-(involuntary arousal — heart rate estimated from the webcam via rPPG, experimental).
+function formatTime(t: number) {
+  const m = Math.floor(t / 60);
+  const s = Math.floor(t % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+const DEBRIEF_SYSTEM = `You write post-conversation debriefs for Wavelength.
 
 Rules:
-- Very friendly, conversational, warm, direct, specific, kind. Like a supportive friend. Suggest, never diagnose.
-- Soft emotion labels (happy/sad/tense/surprised/uncertain/calm) are allowed when
-  grounded in the provided facts — always hedge ("may look sad", "reads as tense").
-  Still cite observable SIGNAL SHIFTS and their timing.
-- Hedge interpretations ("may", "might", "could", "one reading is").
-- Treat the "body" (arousal / heart rate) reads as EXPERIMENTAL and confidence-limited.
-  Never claim they reveal a hidden truth or that someone is lying — only that a signal moved.
+- Be incredibly warm, empathetic, and conversational. Speak directly to the user like a supportive coach or friend. Do NOT sound like a clinical science paper or a sterile report.
+- Gently suggest, never diagnose. Use soft emotion labels (happy/sad/tense/surprised/uncertain/calm) but hedge them kindly ("you seemed a bit tense", "you might have been uncertain").
+- Highlight observable shifts in their signals (engagement, attention).
+- Treat "body" (arousal/heart rate) signals as experimental. Never claim they reveal a hidden truth; simply note that a signal moved.
 - Ground every claim in the provided facts. NEVER invent a timestamp, number, or quote.
-- Include specific references to what was said (with quotes) and when (with timestamps).
+- Include specific references to what they said (using quotes) and exactly when it happened. Always format times as minutes and seconds (e.g., "At 1:24...").
 
-Structure (prose, not a JSON dump):
-1) THE HEADLINE — if a face/body divergence ("The Tell") is provided, lead with it: the
-   single most interesting moment where the body moved but the face stayed steady. Name the
-   time and what each channel did. If there is no Tell, lead with the clearest engagement shift.
-2) 2–3 EVENT-ANCHORED beats — each tied to a specific t=…s moment from the facts, and where
-   a transcript line is given, connect the shift to what was exactly said ("At 1:24 you mentioned...").
-3) 1–2 concrete, kind things to try next time, tied to a specific moment.
+Structure (flowing prose, warm tone):
+1) THE HEADLINE — if a face/body divergence ("The Tell") is provided, gently introduce it as an interesting moment of mixed signals. If there is no Tell, lead with the clearest engagement shift.
+2) 2–3 EVENT-ANCHORED beats — tied to specific moments from the facts. Connect the signal shifts to what was exactly said ("Right around 1:24 when you mentioned...").
+3) 1–2 kind, actionable things to try next time, tied to the specific moments discussed.
 
-Keep it tight (~180–240 words). Cite t=…s or mm:ss timestamps. No headings-as-labels; flowing paragraphs.`;
+Keep it tight (~180–240 words). ALWAYS use mm:ss format for timestamps (e.g., 1:24) in your response, even if the provided facts use raw seconds. Write in flowing paragraphs without clinical labels or headers.`;
 
 function framesFromRows(
   rows: Array<{
@@ -75,10 +73,10 @@ function buildPrompt(req: DebriefInput, factLines: string[], tellLine: string | 
   parts.push(...factLines.map((l) => `- ${l}`));
 
   if (req.transcript.length > 0) {
-    parts.push('Transcript (speaker @ t seconds):');
+    parts.push('Transcript (speaker @ t minutes:seconds):');
     const clip = req.transcript.slice(0, 80);
     for (const turn of clip) {
-      parts.push(`[${turn.t.toFixed(0)}s] ${turn.speaker}: ${turn.text}`);
+      parts.push(`[${formatTime(turn.t)}] ${turn.speaker}: ${turn.text}`);
     }
     if (req.transcript.length > 80) {
       parts.push(`… (${req.transcript.length - 80} more turns omitted)`);
@@ -102,7 +100,7 @@ export async function* streamDebrief(raw: DebriefRequest): AsyncGenerator<string
   // Event-based facts (moments, arousal, The Tell) lead; speech-stat facts fill in.
   const factLines = [...analysis.factLines, ...metrics.factLines];
   const tellLine = analysis.theTell
-    ? `Near t=${analysis.theTell.t}s, ${analysis.theTell.bodyDesc}, while the ${analysis.theTell.faceDesc}.`
+    ? `Near ${formatTime(analysis.theTell.t)}, ${analysis.theTell.bodyDesc}, while the ${analysis.theTell.faceDesc}.`
     : null;
   const prompt = buildPrompt(req, factLines, tellLine);
 

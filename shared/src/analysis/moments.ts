@@ -291,12 +291,12 @@ function buildFactLines(
     const dir = m.direction === 'rise' ? 'rose' : 'dropped';
     const co = m.coText ? ` — around then, ${m.coSpeaker ?? 'someone'} said: "${truncate(m.coText, 80)}"` : '';
     lines.push(
-      `${cap(m.channel)} ${dir} from ${fmt(m.channel, m.before)} to ${fmt(m.channel, m.after)} near t=${m.t}s${co}.`,
+      `${cap(m.channel)} ${dir} from ${fmt(m.channel, m.before)} to ${fmt(m.channel, m.after)} near ${fmtTime(m.t)}${co}.`,
     );
   }
   if (theTell) {
     lines.push(
-      `Biggest face/body divergence near t=${theTell.t}s: ${theTell.bodyDesc}, while the ${theTell.faceDesc}.`,
+      `Biggest face/body divergence near ${fmtTime(theTell.t)}: ${theTell.bodyDesc}, while the ${theTell.faceDesc}.`,
     );
   }
   if (responsiveness.score !== null) {
@@ -316,4 +316,9 @@ function cap(s: string): string {
 }
 function truncate(s: string, n: number): string {
   return s.length > n ? s.slice(0, n - 1) + '…' : s;
+}
+function fmtTime(t: number): string {
+  const m = Math.floor(t / 60);
+  const s = Math.floor(t % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
 }

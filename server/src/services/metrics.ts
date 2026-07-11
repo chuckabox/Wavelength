@@ -26,6 +26,12 @@ function mean(nums: number[]): number | null {
   return nums.reduce((a, b) => a + b, 0) / nums.length;
 }
 
+function fmtTime(t: number): string {
+  const m = Math.floor(t / 60);
+  const s = Math.floor(t % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
 function isQuestion(text: string): boolean {
   return /\?/.test(text) || /^(who|what|when|where|why|how|do|does|did|are|is|can|could|would|will)\b/i.test(text.trim());
 }
@@ -114,17 +120,17 @@ export function computeMetrics(
   const attentionMean = mean(attentions);
 
   const factLines: string[] = [];
-  factLines.push(`Duration ≈ ${durationSec.toFixed(0)}s; ${frames.length} signal frame(s).`);
+  factLines.push(`Duration ≈ ${fmtTime(durationSec)}; ${frames.length} signal frame(s).`);
   if (engagementMean !== null) {
     factLines.push(`Mean engagement ${(engagementMean * 100).toFixed(0)}% (0–100 scale).`);
   }
   if (engagementMin !== null && engagementMinAt !== null) {
     factLines.push(
-      `Lowest engagement ${(engagementMin * 100).toFixed(0)}% at t=${engagementMinAt.toFixed(0)}s.`,
+      `Lowest engagement ${(engagementMin * 100).toFixed(0)}% near ${fmtTime(engagementMinAt)}.`,
     );
   }
   for (const d of engagementDips) {
-    factLines.push(`Engagement dip to ${(d.engagement * 100).toFixed(0)}% near t=${d.t.toFixed(0)}s.`);
+    factLines.push(`Engagement dip to ${(d.engagement * 100).toFixed(0)}% near ${fmtTime(d.t)}.`);
   }
   if (attentionMean !== null) {
     factLines.push(`Mean attention ${(attentionMean * 100).toFixed(0)}%.`);
