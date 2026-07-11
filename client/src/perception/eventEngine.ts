@@ -20,7 +20,7 @@ export type EngineOptions = {
 };
 
 const DEFAULTS = {
-  cooldownS: 90,
+  cooldownS: 15,
   dipZ: -1.5,
   dipHoldS: 10,
 };

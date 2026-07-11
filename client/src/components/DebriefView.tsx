@@ -139,8 +139,8 @@ export default function DebriefView() {
       </div>
 
       {analysis.theTell ? (
-        <div className="border border-alert/40 bg-alert/5 rounded-[3px] p-5">
-          <div className="flex items-center gap-2 mb-2">
+        <div className="bg-white rounded-xl p-8 mb-8">
+          <div className="flex items-center gap-2 mb-3">
             <span className="font-mono text-[11px] tracking-[0.08em] uppercase text-alert">
               The Tell
             </span>
@@ -162,112 +162,117 @@ export default function DebriefView() {
         </div>
       ) : (
         hasArousal && (
-          <p className="font-mono text-xs text-ink-3">
+          <p className="font-mono text-xs text-ink-3 mb-8">
             No strong face/body divergence stood out this session — the two channels
             largely tracked together.
           </p>
         )
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-10 items-start mb-10">
-        <div className="flex flex-col gap-4">
-          <div className="h-64 w-full border border-rule bg-paper-2 p-3">
-            {chartData.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-sm text-ink-3">
-                No frames recorded for this session.
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                  <CartesianGrid stroke="#DAD5C8" strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="t"
-                    tickFormatter={formatTime}
-                    stroke="#A39D8E"
-                    fontSize={11}
-                  />
-                  <YAxis domain={[0, 100]} stroke="#A39D8E" fontSize={11} width={32} />
-                  <Tooltip
-                    formatter={(value) => [`${value}%`, 'engagement']}
-                    labelFormatter={(label) => formatTime(Number(label))}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="engagement"
-                    stroke="#2F4E87"
-                    fill="#E4E9F4"
-                    strokeWidth={1.5}
-                    isAnimationActive={false}
-                  />
-                  {hasArousal && (
+      <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-8 items-start mb-16">
+        <div className="flex flex-col gap-6">
+          <div className="bg-white rounded-xl p-8">
+            <div className="mb-6">
+              <h3 className="font-sans text-[20px] font-medium text-ink mb-1">Engagement over time</h3>
+              <p className="text-[14px] text-ink-3">{chartData.length} frames recorded</p>
+            </div>
+            <div className="h-64 w-full">
+              {chartData.length === 0 ? (
+                <div className="h-full flex items-center justify-center text-sm text-ink-3">
+                  No frames recorded for this session.
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                    <CartesianGrid stroke="#DAD5C8" strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="t"
+                      tickFormatter={formatTime}
+                      stroke="#A39D8E"
+                      fontSize={11}
+                    />
+                    <YAxis domain={[0, 100]} stroke="#A39D8E" fontSize={11} width={32} />
+                    <Tooltip
+                      formatter={(value) => [`${value}%`, 'engagement']}
+                      labelFormatter={(label) => formatTime(Number(label))}
+                    />
                     <Area
                       type="monotone"
-                      dataKey="arousal"
-                      stroke="#B04A3C"
-                      fill="none"
-                      strokeWidth={1.25}
-                      strokeDasharray="2 2"
-                      connectNulls
+                      dataKey="engagement"
+                      stroke="#2F4E87"
+                      fill="#E4E9F4"
+                      strokeWidth={1.5}
                       isAnimationActive={false}
                     />
-                  )}
-                  {analysis.theTell && (
-                    <ReferenceLine
-                      x={analysis.theTell.t}
-                      stroke="#B04A3C"
-                      strokeWidth={1.5}
-                      label={{ value: 'the tell', fill: '#B04A3C', fontSize: 10, position: 'top' }}
-                    />
-                  )}
-                  {nudges.map((n) => (
-                    <ReferenceLine
-                      key={n.id}
-                      x={n.t}
-                      stroke="#A39D8E"
-                      strokeDasharray="4 4"
-                      label={{ value: 'suggestion', fill: '#A39D8E', fontSize: 10 }}
-                    />
-                  ))}
-                </AreaChart>
-              </ResponsiveContainer>
+                    {hasArousal && (
+                      <Area
+                        type="monotone"
+                        dataKey="arousal"
+                        stroke="#B04A3C"
+                        fill="none"
+                        strokeWidth={1.25}
+                        strokeDasharray="2 2"
+                        connectNulls
+                        isAnimationActive={false}
+                      />
+                    )}
+                    {analysis.theTell && (
+                      <ReferenceLine
+                        x={analysis.theTell.t}
+                        stroke="#B04A3C"
+                        strokeWidth={1.5}
+                        label={{ value: 'the tell', fill: '#B04A3C', fontSize: 10, position: 'top' }}
+                      />
+                    )}
+                    {nudges.map((n) => (
+                      <ReferenceLine
+                        key={n.id}
+                        x={n.t}
+                        stroke="#A39D8E"
+                        strokeDasharray="4 4"
+                        label={{ value: 'suggestion', fill: '#A39D8E', fontSize: 10 }}
+                      />
+                    ))}
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+            {hasArousal && (
+              <div className="flex items-center gap-4 font-mono text-[10px] text-ink-3 mt-3">
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-4 h-[2px] bg-accent" /> engagement
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-4 h-0 border-t-[1.5px] border-dashed border-alert" />{' '}
+                  arousal (rPPG · experimental)
+                </span>
+              </div>
             )}
           </div>
 
-          {hasArousal && (
-            <div className="flex items-center gap-4 font-mono text-[10px] text-ink-3 -mt-1">
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-4 h-[2px] bg-accent" /> engagement
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="inline-block w-4 h-0 border-t-[1.5px] border-dashed border-alert" />{' '}
-                arousal (rPPG · experimental)
-              </span>
-            </div>
-          )}
-
-          <dl className="grid grid-cols-3 gap-3 text-sm">
-            <div className="border border-rule p-3">
-              <dt className="text-ink-3 text-xs mb-1">Mean engagement</dt>
-              <dd className="font-mono text-ink">{Math.round(meanEng * 100)}%</dd>
-            </div>
-            <div className="border border-rule p-3">
-              <dt className="text-ink-3 text-xs mb-1">Frames</dt>
-              <dd className="font-mono text-ink">{frames.length}</dd>
-            </div>
-            <div className="border border-rule p-3">
-              <dt className="text-ink-3 text-xs mb-1">Friction</dt>
-              <dd className="font-mono text-ink">{nudges.length}</dd>
-            </div>
-          </dl>
+          <div className="bg-white rounded-xl p-8">
+            <dl className="grid grid-cols-3 gap-6">
+              <div>
+                <dt className="text-ink-3 text-xs mb-1">Mean engagement</dt>
+                <dd className="font-mono text-ink text-lg">{Math.round(meanEng * 100)}%</dd>
+              </div>
+              <div>
+                <dt className="text-ink-3 text-xs mb-1">Frames</dt>
+                <dd className="font-mono text-ink text-lg">{frames.length}</dd>
+              </div>
+              <div>
+                <dt className="text-ink-3 text-xs mb-1">Friction</dt>
+                <dd className="font-mono text-ink text-lg">{nudges.length}</dd>
+              </div>
+            </dl>
+          </div>
 
           {analysis.moments.length > 0 && (
-            <div>
-              <p className="font-mono text-[11px] tracking-[0.06em] uppercase text-ink-3 mb-2">
-                Moments the signals flagged
-              </p>
-              <ul className="flex flex-col border border-rule divide-y divide-rule">
+            <div className="bg-white rounded-xl p-8">
+              <h3 className="font-sans text-[20px] font-medium text-ink mb-4">Moments the signals flagged</h3>
+              <ul className="flex flex-col divide-y divide-rule">
                 {analysis.moments.map((m, i) => (
-                  <li key={`${m.t}-${m.channel}-${i}`} className="px-3 py-2.5 flex gap-3 items-start">
+                  <li key={`${m.t}-${m.channel}-${i}`} className="py-3 flex gap-3 items-start first:pt-0 last:pb-0">
                     <span className="font-mono text-xs text-ink-3 shrink-0 w-9">
                       {formatTime(m.t)}
                     </span>
@@ -281,7 +286,7 @@ export default function DebriefView() {
                       {m.coText && (
                         <span className="text-ink-3">
                           {' '}
-                          · “{m.coText.length > 60 ? m.coText.slice(0, 59) + '…' : m.coText}”
+                          · &ldquo;{m.coText.length > 60 ? m.coText.slice(0, 59) + '…' : m.coText}&rdquo;
                         </span>
                       )}
                     </span>
@@ -295,43 +300,49 @@ export default function DebriefView() {
           )}
 
           {nudges.length > 0 && (
-            <ul className="flex flex-col border border-rule divide-y divide-rule">
-              {nudges.map((n) => (
-                <li key={n.id} className="px-3 py-2.5 flex gap-3 items-start">
-                  <span className="font-mono text-xs text-ink-3 shrink-0">{formatTime(n.t)}</span>
-                  <span className="text-[13px] text-ink flex-1">{n.text}</span>
-                  <Badge variant="accent" size="sm">
-                    {n.confidence}
-                  </Badge>
-                </li>
-              ))}
-            </ul>
+            <div className="bg-white rounded-xl p-8">
+              <h3 className="font-sans text-[20px] font-medium text-ink mb-4">Suggestions</h3>
+              <ul className="flex flex-col divide-y divide-rule">
+                {nudges.map((n) => (
+                  <li key={n.id} className="py-3 flex gap-3 items-start first:pt-0 last:pb-0">
+                    <span className="font-mono text-xs text-ink-3 shrink-0">{formatTime(n.t)}</span>
+                    <span className="text-[13px] text-ink flex-1">{n.text}</span>
+                    <Badge variant="accent" size="sm">
+                      {n.confidence}
+                    </Badge>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
 
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="text-[16px] font-medium text-ink">AI debrief</h2>
-            <Badge variant={streaming ? 'accent' : done ? 'positive' : 'alert'} size="sm">
-              {streaming ? 'streaming' : done ? 'complete' : 'error'}
-            </Badge>
-          </div>
-          <p className="font-mono text-[10px] tracking-[0.04em] text-ink-3 uppercase">
-            Generated by Claude on DigitalOcean Gradient
-          </p>
-          <div className="min-h-[220px] border border-rule bg-paper p-4 text-[15px] leading-relaxed text-ink font-light whitespace-pre-wrap">
-            {text || (streaming ? '…' : 'No debrief text.')}
-            {streaming && <span className="inline-block w-1.5 h-4 bg-accent ml-0.5 animate-pulse" />}
-          </div>
-          {error && (
-            <p className="text-sm text-alert" role="alert">
-              {error}
+        <div className="flex flex-col gap-6">
+          <div className="bg-white rounded-xl p-8">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <h3 className="font-sans text-[20px] font-medium text-ink">AI debrief</h3>
+              <Badge variant={streaming ? 'accent' : done ? 'positive' : 'alert'} size="sm">
+                {streaming ? 'streaming' : done ? 'complete' : 'error'}
+              </Badge>
+            </div>
+            <p className="font-mono text-[10px] tracking-[0.04em] text-ink-3 uppercase mb-4">
+              Generated by Claude on DigitalOcean Gradient
             </p>
-          )}
+            <div className="min-h-[220px] border border-rule bg-paper p-4 text-[15px] leading-relaxed text-ink font-light whitespace-pre-wrap">
+              {text || (streaming ? '…' : 'No debrief text.')}
+              {streaming && <span className="inline-block w-1.5 h-4 bg-accent ml-0.5 animate-pulse" />}
+            </div>
+            {error && (
+              <p className="text-sm text-alert mt-3" role="alert">
+                {error}
+              </p>
+            )}
+          </div>
+
           {transcript.length > 0 && (
-            <div className="mt-4 flex flex-col gap-3">
-              <h3 className="text-[14px] font-medium text-ink">Transcript</h3>
-              <div className="border border-rule bg-paper p-4 max-h-[300px] overflow-auto flex flex-col gap-3 rounded-[3px]">
+            <div className="bg-white rounded-xl p-8">
+              <h3 className="font-sans text-[20px] font-medium text-ink mb-4">Transcript</h3>
+              <div className="flex flex-col gap-3 max-h-[300px] overflow-auto">
                 {transcript.map((turn, i) => (
                   <div key={`${turn.t}-${i}`} className="flex items-start gap-3">
                     <span className="font-mono text-xs text-ink-3 shrink-0 pt-0.5">

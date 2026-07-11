@@ -354,7 +354,7 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
             Live Camera
           </h2>
           <p className="font-mono text-xs text-ink-3">
-            {sourceLabel} · real-time analysis · strict local processing
+            {sourceLabel} · real-time analysis · powered by DigitalOcean Gradient AI
           </p>
           {mpError && (
             <p className="text-xs text-alert mt-1" role="alert">
@@ -616,7 +616,7 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
                     onChange={(e) => setAutoNudge(e.target.checked)}
                     className="accent-[var(--color-accent)] w-4 h-4"
                   />
-                  Auto-nudge (event engine · 90s cooldown)
+                  Auto-nudge (event engine · 15s cooldown)
                 </label>
                 {nudgeError && (
                   <p className="text-xs text-alert" role="alert">
@@ -660,16 +660,18 @@ export default function LiveView({ onGoToTimeline }: LiveViewProps) {
         </div>
       </div>
 
-      <div className="mt-12 flex justify-center">
-        <Button 
-          variant="primary" 
-          size="lg" 
-          className="rounded-full px-12 py-6 text-lg shadow-lg hover:shadow-xl transition-all"
-          onClick={onGoToTimeline}
-        >
-          Review Session
-        </Button>
-      </div>
+      {videoSource !== 'none' && (
+        <div className="mt-12 flex justify-center">
+          <Button 
+            variant="primary" 
+            size="lg" 
+            className="rounded-full px-12 py-6 text-lg shadow-lg hover:shadow-xl transition-all"
+            onClick={onGoToTimeline}
+          >
+            Review Session
+          </Button>
+        </div>
+      )}
 
     </section>
   );
