@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Header from './components/Header';
-import LandingPage from './components/LandingPage';
+const LandingPage = lazy(() => import('./components/LandingPage'));
 import LiveView from './components/LiveView';
 import DebriefView from './components/DebriefView';
 import StatsView from './components/StatsView';
@@ -77,7 +77,15 @@ function AppShell() {
                 </Button>
               </div>
             ) : (
-              <LandingPage onEnterApp={() => void startSession()} />
+              <Suspense fallback={
+                <div className="flex flex-col items-center justify-center h-[50vh] gap-4">
+                  <p className="text-ink-3 font-mono text-sm tracking-widest uppercase text-center max-w-md animate-pulse">
+                    Loading...
+                  </p>
+                </div>
+              }>
+                <LandingPage onEnterApp={() => void startSession()} />
+              </Suspense>
             )
           )}
           {phase === 'live' && (
