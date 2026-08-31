@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build -w shared && npm run build -w client && cp -r client/dist dist",
-  "outputDirectory": "dist",
+  "buildCommand": "npm run build -w shared && npm run build -w client",
+  "outputDirectory": "client/dist",
   "installCommand": "npm install"
 }
