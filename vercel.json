@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build -w shared && npm run build -w client && (if [ -d client/dist ]; then cp -r client/dist dist; fi)",
-  "outputDirectory": "dist",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "buildCommand": "npm run build -w shared && cd client && npx tsc -b && npx vite build --outDir ../dist",
+  "outputDirectory": "dist"
 }
